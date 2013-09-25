@@ -1,15 +1,19 @@
 <!doctype html>
-<html> 
+<html lang="en"> 
 	<head>
 		<meta charset='UTF-8'>
 		<link href="RPG_combat.css" rel="stylesheet" type="text/css" media="all">
+		<title>Dragon Smasher</title>
 	</head>
 		<body>
+			<h1>DRAGON SMASHER</h1>
 			<canvas id='game_screen' width='400' height='400'>Canvas not supported on your browser</canvas>
    			<div id='background'>
    				<div class='game' id='command_card'>
-   					<button onclick="battle1('attack');">Attack</button>
-   					<button onclick="battle1('defend');">Defend</button>
+   					<button onclick="hero.fight();">FIGHT</button>
+   					<button onclick="hero.defend();">DEFEND</button>
+   					<button onclick="hero.item();">ITEM</button>
+   					<button onclick="hero.run();">RUN</button>
    				</div>
    				<div class='game' id='stats'><p>Game stats go here.</p></div>    
    				<div class='game' id='message_box'>
