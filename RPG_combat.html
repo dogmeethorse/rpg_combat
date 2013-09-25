@@ -6,20 +6,23 @@
 		<title>Dragon Smasher</title>
 	</head>
 		<body>
+		<div id='background'>
 			<h1>DRAGON SMASHER</h1>
 			<canvas id='game_screen' width='400' height='400'>Canvas not supported on your browser</canvas>
-   			<div id='background'>
+   		   		<div class='game' id='stats'><p>Game stats go here.</p></div>    
    				<div class='game' id='command_card'>
-   					<button onclick="hero.fight();">FIGHT</button>
-   					<button onclick="hero.defend();">DEFEND</button>
-   					<button onclick="hero.item();">ITEM</button>
-   					<button onclick="hero.run();">RUN</button>
+   					<div style='text-align:center;margin-top:20px'>
+   					<button class='game' onclick="hero.fight();">FIGHT</button>
+   					<button class='game' onclick="hero.defend();">DEFEND</button>
+   					<button class='game' onclick="hero.item();">ITEM</button>
+   					<button class='game' onclick="hero.run();">RUN</button>
+   					</div>
    				</div>
-   				<div class='game' id='stats'><p>Game stats go here.</p></div>    
+
    				<div class='game' id='message_box'>
    					<p>Message Box</p>
    				</div>
-			</div>					
+		</div>					
 			<script src="RPG_combat.js" type='text/javascript' ></script>
 		</body>
 </html>
