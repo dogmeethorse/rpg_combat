@@ -1,6 +1,10 @@
 h1{
 	text-align:center ;
 }
+p.game{
+	color:white;
+	margin-left:5px;
+}
 button.game{
 	display:box;
 	text-align: center;
@@ -24,6 +28,7 @@ button.game{
 	background-color:#0B6121;
 	width: 600px;
 	border-radius: 20px;
+	box-shadow: inset 0px 0px 30px #888;
 }
 
 div.game {
