@@ -18,12 +18,12 @@ function randomInt(min,max){
             return Math.floor(Math.random() * (max - (min-1) )) + min;
         }
         
-function sendMessage(output,replace){
+function sendMessage(output,addOrReplace){
    	if(addOrReplace == true){
-       	outputElement.innerHTML = '<p class="game">' + output + '</p>';
+       	messageEl.innerHTML = '<p class="game">' + output + '</p>';
     }
    	else{
-        outputElement.innerHTML += '<p class="game">' + output + '</p>';
+        messageEl.innerHTML += '<p class="game">' + output + '</p>';
     }
 }
 
@@ -93,10 +93,10 @@ Enemy.prototype.constructor = Enemy();
 
 
 function handle(action){
-	console.log("event function triggering");
+	console.log("event function triggering " + action);
 	if(combat_happening){
 		switch(action){
-			case 'attack':
+			case 'fight':
 				var result = hero.attack(current_enemy);
 			break;
 			case 'defend':
@@ -108,14 +108,17 @@ function handle(action){
 		}
 	}
 	if(result!= null){
-		sendMessage("You hit the " + current_enemy + "for" + result + "damage! +<br>", true);
+		var feedback = "You hit the " + current_enemy.name + "for" + result + "damage!"
+		console.log("feedback string = " + feedback);
+		sendMessage( feedback, true);
 	}
 	
 	if(current_enemy.isAlive()){
 		current_enemy.attack(hero);
 	}
 	else{
-		sendMessage("You have defeated the "+ current_enemy.name + " Congratulations!", false);
+		var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
+		sendMessage(feedback, false);
 	}
 	setStats();
 }
@@ -126,5 +129,7 @@ hero.lvl = 1;
 hero.gld = 0;
 setStats();
 
-slime = new Enemy(3,1,0,0, 'slime');
+slime = new Enemy(3,1,0,0,20,'slime');
+console.log("check to see if slime.name exists: " + slime.name);
 current_enemy = slime;
+console.log("Current Enemy: " + current_enemy.name);
