@@ -4,6 +4,17 @@
  * Now I added some sample dialog and a name prop to enemy.
  * GET ATTACKS WORKING THEN ADD GAME STATES.
  */
+
+
+const BEGIN    = 10;
+const ENDGAME  =  0;
+const COMBAT   = 20;
+const TREASURE = 30;
+const ITEMS    = 40;
+
+
+var state = BEGIN;
+
 var dragon_screen = document.getElementById('game_screen');
 var d_ctx = dragon_screen.getContext('2d');
 
@@ -13,6 +24,7 @@ var messageEl = document.getElementById('message_box');
 
 var combat_happening = true;// should start the game as false
 var current_enemy = null;
+
 
 function randomInt(min,max){
             return Math.floor(Math.random() * (max - (min-1) )) + min;
@@ -87,15 +99,21 @@ function Enemy(hp,dmg,aggro,atk,esc, name){
 		}
 		this.attack();
 	}
+	
+	Enemy.prototype.greeting = function(){
+		sendMessage("A " + this.name + " approaches. The " + this.name + " leers at you.", true);
+	}
 }
 Enemy.prototype= new Game_Entity();
 Enemy.prototype.constructor = Enemy();
 
+function intro(){
+	current_enemy.greeting();
+	state = COMBAT;
+}
 
-function handle(action){
-	console.log("event function triggering " + action);
-	if(combat_happening){
-		switch(action){
+function handleCombat(action){
+	switch(action){
 			case 'fight':
 				var result = hero.attack(current_enemy);
 			break;
@@ -106,7 +124,7 @@ function handle(action){
 			case 'run':
 			break;
 		}
-	}
+	
 	if(result!= null){
 		var feedback = "You hit the " + current_enemy.name + "for" + result + "damage!"
 		console.log("feedback string = " + feedback);
@@ -120,7 +138,20 @@ function handle(action){
 		var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
 		sendMessage(feedback, false);
 	}
-	setStats();
+	
+}
+
+function handle(action){
+	console.log("event function triggering " + action);
+	switch(state)
+		case BEGIN:
+			
+		case COMBAT:
+			handleCombat(action);
+			break;
+		
+	}
+	setStats();	
 }
 
 hero = new Game_Entity(10,1);
@@ -133,3 +164,5 @@ slime = new Enemy(3,1,0,0,20,'slime');
 console.log("check to see if slime.name exists: " + slime.name);
 current_enemy = slime;
 console.log("Current Enemy: " + current_enemy.name);
+
+
