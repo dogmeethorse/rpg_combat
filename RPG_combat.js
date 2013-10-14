@@ -107,7 +107,10 @@ function Enemy(hp,dmg,aggro,atk,esc, name){
 Enemy.prototype= new Game_Entity();
 Enemy.prototype.constructor = Enemy();
 
-function intro(){
+function handleBegin(){
+	current_enemy = new Enemy(3,1,0,0,20,'slime');
+	console.log("check to see if slime.name exists: " + slime.name);
+	console.log("Current Enemy: " + current_enemy.name);
 	current_enemy.greeting();
 	state = COMBAT;
 }
@@ -145,7 +148,8 @@ function handle(action){
 	console.log("event function triggering " + action);
 	switch(state)
 		case BEGIN:
-			
+			handleBegin();
+			break;
 		case COMBAT:
 			handleCombat(action);
 			break;
@@ -160,9 +164,5 @@ hero.lvl = 1;
 hero.gld = 0;
 setStats();
 
-slime = new Enemy(3,1,0,0,20,'slime');
-console.log("check to see if slime.name exists: " + slime.name);
-current_enemy = slime;
-console.log("Current Enemy: " + current_enemy.name);
 
 
