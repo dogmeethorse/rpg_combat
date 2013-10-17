@@ -25,17 +25,22 @@ var messageEl = document.getElementById('message_box');
 var combat_happening = true;// should start the game as false
 var current_enemy = null;
 
+function pause(miliseconds){
+	miliseconds += startTime = new Date().getTime();
+	while (new Date() < miliseconds){};
+}
 
 function randomInt(min,max){
             return Math.floor(Math.random() * (max - (min-1) )) + min;
         }
         
 function sendMessage(output,addOrReplace){
-   	if(addOrReplace == true){
-       	messageEl.innerHTML = '<p class="game">' + output + '</p>';
+	//pause(1000);
+   	if(addOrReplace == true){ 		
+       	messageEl.innerHTML = '<span class="game">' + output + '</span>';
     }
    	else{
-        messageEl.innerHTML += '<p class="game">' + output + '</p>';
+        messageEl.innerHTML += '<br> <span class="game"> ' + output + '</span>';
     }
 }
 
@@ -56,8 +61,8 @@ function Game_Entity(hp,dmg){
 	this.escChance = 50;
 	
 	Game_Entity.prototype.attack = function(target){
-		if(atkChance >= randomInt(1,100)){
-			attackDmg = randomInt(this.minDmg,this.maxDmg);
+		if(this.atkChance >= randomInt(1,100)){
+			var attackDmg = randomInt(this.minDmg,this.maxDmg)|| this.dmg;
 			target.hp -= attackDmg;
 			return attackDmg;
 		}
@@ -81,13 +86,14 @@ function Game_Entity(hp,dmg){
 	}
 }
 
-
-
 function Enemy(hp,dmg,aggro,atk,esc, name){
 	this.name = name;
+	this.hp = hp;
+	this.dmg = dmg;
 	this.atkChance = atk;
 	this.escChance = esc;
 	this.aggro = aggro;  //chance on whether monster will attack of flee from 0-1
+	this.alive = true;
 	var maxHp = this.hp;
 	
 	Enemy.prototype.takeTurn = function(){
@@ -108,9 +114,9 @@ Enemy.prototype= new Game_Entity();
 Enemy.prototype.constructor = Enemy();
 
 function handleBegin(){
-	current_enemy = new Enemy(3,1,0,0,20,'slime');
-	console.log("check to see if slime.name exists: " + slime.name);
+	current_enemy = new Enemy(3,1,0,100,20,'slime');
 	console.log("Current Enemy: " + current_enemy.name);
+	console.log("Current Enemy hp = " + current_enemy.hp);
 	current_enemy.greeting();
 	state = COMBAT;
 }
@@ -128,14 +134,31 @@ function handleCombat(action){
 			break;
 		}
 	
-	if(result!= null){
-		var feedback = "You hit the " + current_enemy.name + "for" + result + "damage!"
+	if(result!= false){
+		var feedback = "You hit the " + current_enemy.name + " for " + result + " damage!"
 		console.log("feedback string = " + feedback);
 		sendMessage( feedback, true);
+		console.log ("Enemy hp = " + current_enemy.hp);
+	}
+	else{
+		console.log("miss");
+		var feedback = "You missed the " + current_enemy.name + "!";
+		sendMessage(feedback, true);
 	}
 	
 	if(current_enemy.isAlive()){
-		current_enemy.attack(hero);
+		console.log("Enemy is attacking!");
+		sendMessage("The " + current_enemy.name + " is attacking!", false);
+		var result = current_enemy.attack(hero);
+		if(result != false){
+			var feedback = "The " + current_enemy.name + " hit you for " + result + " damage!"
+			console.log("feedback string = " + feedback);
+			sendMessage( feedback, false);
+		}
+		else{
+			var feedback = "The " + current_enemy.name + " missed you!";
+			sendMessage(feedback, false);
+		}
 	}
 	else{
 		var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
@@ -146,15 +169,17 @@ function handleCombat(action){
 
 function handle(action){
 	console.log("event function triggering " + action);
-	switch(state)
+	switch(state){
 		case BEGIN:
 			handleBegin();
 			break;
 		case COMBAT:
 			handleCombat(action);
 			break;
-		
+		case TREASURE:
+			break;
 	}
+	console.log("setting stats");
 	setStats();	
 }
 
