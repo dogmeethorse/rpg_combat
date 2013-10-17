@@ -67,7 +67,7 @@ function Game_Entity(hp,dmg){
 			return attackDmg;
 		}
 		else{
-			return false;
+			return null;
 		}
 	}
 	Game_Entity.prototype.isAlive = function(){
@@ -121,20 +121,8 @@ function handleBegin(){
 	state = COMBAT;
 }
 
-function handleCombat(action){
-	switch(action){
-			case 'fight':
-				var result = hero.attack(current_enemy);
-			break;
-			case 'defend':
-			break;
-			case 'item':
-			break;
-			case 'run':
-			break;
-		}
-	
-	if(result!= false){
+function resolveCombat(result){
+	if(result!= null){
 		var feedback = "You hit the " + current_enemy.name + " for " + result + " damage!"
 		console.log("feedback string = " + feedback);
 		sendMessage( feedback, true);
@@ -146,6 +134,22 @@ function handleCombat(action){
 		sendMessage(feedback, true);
 	}
 	
+
+}
+
+function handleCombat(action){
+	switch(action){
+		case 'fight':
+			var result = hero.attack(current_enemy);
+			resolveCombat(result);
+			break;
+		case 'defend':
+			break;
+		case 'item':
+			break;
+		case 'run':
+			break;
+	}	
 	if(current_enemy.isAlive()){
 		console.log("Enemy is attacking!");
 		sendMessage("The " + current_enemy.name + " is attacking!", false);
@@ -164,7 +168,6 @@ function handleCombat(action){
 		var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
 		sendMessage(feedback, false);
 	}
-	
 }
 
 function handle(action){
