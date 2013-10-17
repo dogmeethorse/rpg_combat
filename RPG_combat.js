@@ -114,7 +114,7 @@ Enemy.prototype= new Game_Entity();
 Enemy.prototype.constructor = Enemy();
 
 function handleBegin(){
-	current_enemy = new Enemy(3,1,0,100,20,'slime');
+	current_enemy = new Enemy(3,1,0,50,20,'slime');
 	console.log("Current Enemy: " + current_enemy.name);
 	console.log("Current Enemy hp = " + current_enemy.hp);
 	current_enemy.greeting();
