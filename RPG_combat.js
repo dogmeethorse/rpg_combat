@@ -62,7 +62,7 @@ function Game_Entity(hp,dmg){
 	
 	Game_Entity.prototype.attack = function(target){
 		if(this.atkChance >= randomInt(1,100)){
-			var attackDmg = randomInt(this.minDmg,this.maxDmg)|| this.dmg;
+			var attackDmg = randomInt(this.minDmg,this.maxDmg);
 			target.hp -= attackDmg;
 			return attackDmg;
 		}
@@ -89,21 +89,35 @@ function Game_Entity(hp,dmg){
 function Enemy(hp,dmg,aggro,atk,esc, name){
 	this.name = name;
 	this.hp = hp;
-	this.dmg = dmg;
+	this.maxDmg = dmg;
+	this.minDmg = 0;
 	this.atkChance = atk;
 	this.escChance = esc;
 	this.aggro = aggro;  //chance on whether monster will attack of flee from 0-1
 	this.alive = true;
 	var maxHp = this.hp;
-	
+	Enemy.prototype.
 	Enemy.prototype.takeTurn = function(){
+		/*
 		if(1-this.hp/maxhp >aggro){
 			if(Math.random()> aggro){
 				this.run();
 				return;
 			}
 		}
-		this.attack();
+		*/
+		console.log("Enemy is attacking!");
+		sendMessage("The " + this.name + " is attacking!", false);
+		var result = this.attack(hero);
+		if(result != null){
+			var feedback = "The " + this.name + " hit you for " + result + " damage!"
+			console.log("feedback string = " + feedback);
+			sendMessage( feedback, false);
+		}
+		else{
+			var feedback = "The " + this.name + " missed you!";
+			sendMessage(feedback, false);
+		}
 	}
 	
 	Enemy.prototype.greeting = function(){
@@ -151,23 +165,13 @@ function handleCombat(action){
 			break;
 	}	
 	if(current_enemy.isAlive()){
-		console.log("Enemy is attacking!");
-		sendMessage("The " + current_enemy.name + " is attacking!", false);
-		var result = current_enemy.attack(hero);
-		if(result != false){
-			var feedback = "The " + current_enemy.name + " hit you for " + result + " damage!"
-			console.log("feedback string = " + feedback);
-			sendMessage( feedback, false);
-		}
-		else{
-			var feedback = "The " + current_enemy.name + " missed you!";
-			sendMessage(feedback, false);
-		}
+		current_enemy.takeTurn();
 	}
 	else{
 		var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
 		sendMessage(feedback, false);
 	}
+
 }
 
 function handle(action){
@@ -187,6 +191,7 @@ function handle(action){
 }
 
 hero = new Game_Entity(10,1);
+hero.name = "You";
 hero.xp = 0;
 hero.lvl = 1;
 hero.gld = 0;
