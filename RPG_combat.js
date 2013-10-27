@@ -48,13 +48,19 @@ function initCombat(){
 	state = COMBAT;
 	current_enemy.greeting();
 	current_enemy.draw();
+	console.log("enemy hp = " + current_enemy.hp);
 
 }
-function endCombat(){
+function endCombat(how){
+	//how is a string that says how combat ended
+	
 	current_enemy.die();
 	d_ctx.clearRect(0,0,400,400);
 	state = TREASURE;
-	handleTreasure('dead enemy');
+	if(how =='victory'){
+		handleTreasure('dead enemy');
+	}
+	sendMessage("Press 'fight' button to fight another monster.", false);
 }
 
 function Game_Entity(hp,dmg){
@@ -84,8 +90,14 @@ function Game_Entity(hp,dmg){
 		}
 	}
 	Game_Entity.prototype.run = function(){
-		if(randomInt(1,50)< this.escChance){
-			
+		if(randomInt(1,100)< this.escChance){
+			sendMessage("You ran away. Pretty lame.", true);
+			endCombat('run');
+			return true;
+		}
+		else{
+			sendMessage('blocked!!!!', true);
+			return false;
 		}
 	
 	}
@@ -187,6 +199,9 @@ function handleCombat(action){
 		case 'item':
 			break;
 		case 'run':
+			if(hero.run()){
+				return;
+			}
 			break;
 	}	
 	if(current_enemy.isAlive()){
@@ -195,7 +210,7 @@ function handleCombat(action){
 	else{
 		var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
 		sendMessage(feedback, false);
-		endCombat();
+		endCombat('victory');
 	}
 
 }
