@@ -63,46 +63,46 @@ function endCombat(how){
 	}
 	sendMessage("Press 'fight' button to fight another monster.", false);
 }
-
+	
 function Game_Entity(hp,dmg){
-	this.maxDmg = dmg;
-	this.minDmg = 1;
-	this.hp = hp;
-	this.atkChance = 50;
-	this.alive = true;
-	this.escChance = 50;
-	
-	Game_Entity.prototype.attack = function(target){
-		if(this.atkChance >= randomInt(1,100)){
-			var attackDmg = randomInt(this.minDmg,this.maxDmg);
-			target.hp -= attackDmg;
-			return attackDmg;
-		}
-		else{
-			return null;
-		}
-	}
-	Game_Entity.prototype.isAlive = function(){
-		if(this.hp<= 0){
-			return false;
-		}
-		else{
-			return true;
-		}
-	}
-	Game_Entity.prototype.run = function(){
-		if(randomInt(1,100)< this.escChance){
-			console.log('running');
-			sendMessage("You ran away. Pretty lame.", true);
-			endCombat('run');
-			return true;
-		}
-		else{
-			sendMessage('blocked!!!!', true);
-			return false;
-		}
-	
-	}
+        this.maxDmg = dmg;
+        this.minDmg = 1;
+        this.hp = hp;
+        this.atkChance = 50;
+        this.alive = true;
+        this.escChance = 50;
+        
+        Game_Entity.prototype.attack = function(target){
+                if(this.atkChance >= randomInt(1,100)){
+                        var attackDmg = randomInt(this.minDmg,this.maxDmg);
+                        target.hp -= attackDmg;
+                        return attackDmg;
+                }
+                else{
+                        return null;
+                }
+        }
+        Game_Entity.prototype.isAlive = function(){
+                if(this.hp<= 0){
+                        return false;
+                }
+                else{
+                        return true;
+                }
+        }
+        Game_Entity.prototype.run = function(){
+                if(randomInt(1,100)< this.escChance){
+                        console.log('running');
+                        sendMessage("You ran away. Pretty lame.", true);
+                        endCombat('run');
+                        return true;
+                }
+                else{
+                        sendMessage('blocked!!!!', true);
+                        return false;
+                }
+        
+        }
 }
 
 function Enemy(index, name,hp,dmg,aggro,atk,esc){
@@ -159,8 +159,8 @@ function Enemy(index, name,hp,dmg,aggro,atk,esc){
 		sendMessage("A " + this.name + " approaches. The " + this.name + " leers at you.", true);
 	}
 }
-Enemy.prototype = new Game_Entity();
 Enemy.prototype.constructor = Enemy();
+Enemy.prototype = new Game_Entity();
 
 function handleBegin(){
 	loadEnemyPics();
@@ -255,10 +255,13 @@ function handle(action){
 }
 
 hero = new Game_Entity(10,1);
+hero.weapon = noWeapon;
 hero.name = "You";
 hero.xp = 0;
 hero.lvl = 1;
 hero.gld = 0;
+hero.maxDmg += hero.lvl +hero.weapon.dmgBonus; 
+hero.minDmg ;
 setStats();
 
 
