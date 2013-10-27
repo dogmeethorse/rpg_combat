@@ -96,7 +96,24 @@ function Enemy(hp,dmg,aggro,atk,esc, name){
 	this.aggro = aggro;  //chance on whether monster will attack of flee from 0-1
 	this.alive = true;
 	var maxHp = this.hp;
-	Enemy.prototype.
+	var picture=new Image();
+	picture.src="dusk_enemies/skeleton.png";
+	picture.addEventListener('load', this.draw , false);
+
+	Enemy.prototype.draw = function(){		
+		 d_ctx.drawImage(picture, -100, -100,500,500);
+	}
+
+	
+	Enemy.prototype.isAlive = function(){
+		if(this.hp> 0){
+			return true;
+		}
+		else{ 
+			return false;
+		}
+	}
+	
 	Enemy.prototype.takeTurn = function(){
 		/*
 		if(1-this.hp/maxhp >aggro){
@@ -128,7 +145,7 @@ Enemy.prototype= new Game_Entity();
 Enemy.prototype.constructor = Enemy();
 
 function handleBegin(){
-	current_enemy = new Enemy(3,1,0,50,20,'slime');
+	current_enemy = new Enemy(3,1,0,50,20,'Skeleton');
 	console.log("Current Enemy: " + current_enemy.name);
 	console.log("Current Enemy hp = " + current_enemy.hp);
 	current_enemy.greeting();
