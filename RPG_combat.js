@@ -101,7 +101,7 @@ function Enemy(hp,dmg,aggro,atk,esc, name){
 	picture.addEventListener('load', this.draw , false);
 
 	Enemy.prototype.draw = function(){		
-		 d_ctx.drawImage(picture, -100, -100,500,500);
+		 d_ctx.drawImage(picture, 0, 0,400,400);
 	}
 
 	
