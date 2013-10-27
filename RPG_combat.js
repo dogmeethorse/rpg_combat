@@ -1,4 +1,6 @@
-/* We now have a current enemy and have created a slime enemy
+/*
+ * All images created by Chris Bellinger for his Open Source Game Heroine Dusk.
+ * We now have a current enemy and have created a slime enemy
  * the next step is to make it so that the message box sends the user input so that we can test to see if the 
  * program is functioning properly so that we can debug.
  * Now I added some sample dialog and a name prop to enemy.
@@ -33,7 +35,7 @@ function pause(miliseconds){
 function randomInt(min,max){
             return Math.floor(Math.random() * (max - (min-1) )) + min;
         }
-        
+     
 function sendMessage(output,addOrReplace){
 	//pause(1000);
    	if(addOrReplace == true){ 		
@@ -86,7 +88,8 @@ function Game_Entity(hp,dmg){
 	}
 }
 
-function Enemy(hp,dmg,aggro,atk,esc, name){
+function Enemy(index, name,hp,dmg,aggro,atk,esc){
+	this.index = index;
 	this.name = name;
 	this.hp = hp;
 	this.maxDmg = dmg;
@@ -96,14 +99,10 @@ function Enemy(hp,dmg,aggro,atk,esc, name){
 	this.aggro = aggro;  //chance on whether monster will attack of flee from 0-1
 	this.alive = true;
 	var maxHp = this.hp;
-	var picture=new Image();
-	picture.src="dusk_enemies/skeleton.png";
-	picture.addEventListener('load', this.draw , false);
-
+	
 	Enemy.prototype.draw = function(){		
-		 d_ctx.drawImage(picture, 0, 0,400,400);
+		 d_ctx.drawImage(enemy_pics[this.index], 0, 0, 400,400);
 	}
-
 	
 	Enemy.prototype.isAlive = function(){
 		if(this.hp> 0){
@@ -141,11 +140,14 @@ function Enemy(hp,dmg,aggro,atk,esc, name){
 		sendMessage("A " + this.name + " approaches. The " + this.name + " leers at you.", true);
 	}
 }
-Enemy.prototype= new Game_Entity();
+Enemy.prototype = new Game_Entity();
 Enemy.prototype.constructor = Enemy();
 
 function handleBegin(){
-	current_enemy = new Enemy(3,1,0,50,20,'Skeleton');
+	loadEnemyPics();
+	fillEnemyArray();
+	current_enemy = enemies[0];
+	current_enemy.draw();
 	console.log("Current Enemy: " + current_enemy.name);
 	console.log("Current Enemy hp = " + current_enemy.hp);
 	current_enemy.greeting();
