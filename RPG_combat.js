@@ -53,8 +53,9 @@ function initCombat(){
 }
 function endCombat(how){
 	//how is a string that says how combat ended
-	
+	console.log('ending combat');
 	current_enemy.die();
+	console.log("killing enemy hp reset to " + current_enemy.hp);
 	d_ctx.clearRect(0,0,400,400);
 	state = TREASURE;
 	if(how =='victory'){
@@ -91,6 +92,7 @@ function Game_Entity(hp,dmg){
 	}
 	Game_Entity.prototype.run = function(){
 		if(randomInt(1,100)< this.escChance){
+			console.log('running');
 			sendMessage("You ran away. Pretty lame.", true);
 			endCombat('run');
 			return true;
@@ -112,7 +114,7 @@ function Enemy(index, name,hp,dmg,aggro,atk,esc){
 	this.atkChance = atk;
 	this.escChance = esc;
 	this.aggro = aggro;  //chance on whether monster will attack of flee from 0-1
-	var maxHp = this.hp;
+	this.maxHp = this.hp;
 	
 	Enemy.prototype.draw = function(){		
 		 d_ctx.drawImage(enemy_pics[this.index], 0, 0, 400,400);
@@ -127,7 +129,7 @@ function Enemy(index, name,hp,dmg,aggro,atk,esc){
 		}
 	}
 	Enemy.prototype.die = function(){
-		this.hp = maxHp;
+		this.hp = this.maxHp;
 	}
 	
 	Enemy.prototype.takeTurn = function(){
