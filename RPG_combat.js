@@ -7,13 +7,11 @@
  * GET ATTACKS WORKING THEN ADD GAME STATES.
  */
 
-
 const BEGIN    = 10;
 const ENDGAME  =  0;
 const COMBAT   = 20;
 const TREASURE = 30;
 const ITEMS    = 40;
-
 
 var state = BEGIN;
 
@@ -24,13 +22,7 @@ var outputElement = document.getElementById('output');
 var statOutputEl = document.getElementById('stats');
 var messageEl = document.getElementById('message_box');
 
-var combat_happening = true;// should start the game as false
 var current_enemy = null;
-
-function pause(miliseconds){
-	miliseconds += startTime = new Date().getTime();
-	while (new Date() < miliseconds){};
-}
 
 function randomInt(min,max){
             return Math.floor(Math.random() * (max - (min-1) )) + min;
@@ -50,8 +42,19 @@ function setStats(){
 	statOutputEl.innerHTML = "<p class='game'> HP: " + hero.hp +"<br>XP: " + hero.xp + "<br> LVL: " + hero.lvl+ "<br> GLD: " + hero.gld + "</p>";
 }
 
-function endCombat(){
+function initCombat(){
+	console.log('init COMBAT');
+	current_enemy = enemies[randomInt(0,8)];
+	state = COMBAT;
+	current_enemy.greeting();
+	current_enemy.draw();
 
+}
+function endCombat(){
+	current_enemy.die();
+	d_ctx.clearRect(0,0,400,400);
+	state = TREASURE;
+	handleTreasure('dead enemy');
 }
 
 function Game_Entity(hp,dmg){
@@ -97,7 +100,6 @@ function Enemy(index, name,hp,dmg,aggro,atk,esc){
 	this.atkChance = atk;
 	this.escChance = esc;
 	this.aggro = aggro;  //chance on whether monster will attack of flee from 0-1
-	this.alive = true;
 	var maxHp = this.hp;
 	
 	Enemy.prototype.draw = function(){		
@@ -111,6 +113,9 @@ function Enemy(index, name,hp,dmg,aggro,atk,esc){
 		else{ 
 			return false;
 		}
+	}
+	Enemy.prototype.die = function(){
+		this.hp = maxHp;
 	}
 	
 	Enemy.prototype.takeTurn = function(){
@@ -146,13 +151,14 @@ Enemy.prototype.constructor = Enemy();
 function handleBegin(){
 	loadEnemyPics();
 	fillEnemyArray();
-	current_enemy = enemies[0];
+	current_enemy = enemies[7];
 	current_enemy.draw();
 	console.log("Current Enemy: " + current_enemy.name);
 	console.log("Current Enemy hp = " + current_enemy.hp);
 	current_enemy.greeting();
 	state = COMBAT;
 }
+
 
 function resolveCombat(result){
 	if(result!= null){
@@ -189,8 +195,29 @@ function handleCombat(action){
 	else{
 		var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
 		sendMessage(feedback, false);
+		endCombat();
 	}
 
+}
+
+function giveTreasure(){
+	var xpGain = current_enemy.hp;
+	var gldGain = current_enemy.maxDmg;
+	sendMessage( "you got " + xpGain + "XP and " + gldGain + " gold.", false );
+	hero.xp += xpGain;
+	hero.gld += gldGain;
+}
+
+function handleTreasure(action){
+	console.log('state = TREASURE');
+	switch(action){
+		case 'fight':
+			initCombat();
+			break;
+		case 'dead enemy':
+			giveTreasure();
+			break;
+	}
 }
 
 function handle(action){
@@ -203,6 +230,7 @@ function handle(action){
 			handleCombat(action);
 			break;
 		case TREASURE:
+			handleTreasure(action);
 			break;
 	}
 	console.log("setting stats");
