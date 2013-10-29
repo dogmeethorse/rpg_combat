@@ -5,9 +5,11 @@ function Weapon(name,dmgBonus, attackChanceBonus){
 	
 	
 	Weapon.prototype.equip = function(){
+		hero.weapon.unequip();
 		hero.weapon = this;
 		hero.maxDmg += this.dmgBonus;
 		hero.atk += this.attackChanceBonus;
+		console.log("wielding :"+ hero.weapon.name);
 	}
 	
 	Weapon.prototype.unequip = function(){

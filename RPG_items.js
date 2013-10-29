@@ -6,6 +6,8 @@ function createItemMenu(){
 	itemMenu.innerHTML = '<h3>ITEMS<h3>'
 	
 	var weaponList = document.createElement('select');
+	
+	weaponList.setAttribute("onChange","hero.weapons[this.selectedIndex].equip()");
 	var option = [];
 	
 	for(var weap = 0; weap < hero.weapons.length; weap++){
