@@ -5,6 +5,11 @@
  * program is functioning properly so that we can debug.
  * Now I added some sample dialog and a name prop to enemy.
  * GET ATTACKS WORKING THEN ADD GAME STATES.
+ *
+ *
+ * Run works and fight works. Now adding items. should create itemMenu. and then have functions 
+ * that update it  open it and close it.
+ * right now item menu won't close after second time you open it.
  */
 
 const BEGIN    = 10;
@@ -18,6 +23,7 @@ var state = BEGIN;
 var dragon_screen = document.getElementById('game_screen');
 var d_ctx = dragon_screen.getContext('2d');
 
+var background = document.getElementById('background');
 var outputElement = document.getElementById('output');
 var statOutputEl = document.getElementById('stats');
 var messageEl = document.getElementById('message_box');
@@ -51,6 +57,7 @@ function initCombat(){
 	console.log("enemy hp = " + current_enemy.hp);
 
 }
+
 function endCombat(how){
 	//how is a string that says how combat ended
 	console.log('ending combat');
@@ -199,6 +206,7 @@ function handleCombat(action){
 		case 'defend':
 			break;
 		case 'item':
+			openItemMenu();
 			break;
 		case 'run':
 			if(hero.run()){
@@ -215,6 +223,36 @@ function handleCombat(action){
 		endCombat('victory');
 	}
 
+}
+function openItemMenu(){
+	var itemMenu = document.createElement('div');
+	
+	itemMenu.setAttribute('class','game');
+	itemMenu.setAttribute('id', 'itemMenu');
+	itemMenu.innerHTML = '<h3>ITEMS<h3>'
+	
+	var weaponList = document.createElement('select');
+	var option = [];
+	
+	for(var weap = 0; weap < hero.weapons.length; weap++){
+		option[weap] = document.createElement('option')
+		option[weap].setAttribute('value', hero.weapons[weap].name);
+		option[weap].innerHTML = hero.weapons[weap].name;
+		weaponList.appendChild(option[weap]);
+	}
+	
+	var closeItems = document.createElement('button');
+	closeItems.setAttribute('onclick', 'closeItemMenu(itemMenu)');
+	closeItems.innerHTML = "CLOSE";
+	
+	
+	background.appendChild(itemMenu);
+	itemMenu.appendChild(weaponList);
+	itemMenu.appendChild(closeItems);
+}
+
+function closeItemMenu(itemMenu){
+	background.removeChild(itemMenu);
 }
 
 function giveTreasure(){
@@ -260,8 +298,10 @@ hero.name = "You";
 hero.xp = 0;
 hero.lvl = 1;
 hero.gld = 0;
-hero.maxDmg += hero.lvl +hero.weapon.dmgBonus; 
-hero.minDmg ;
+hero.maxDmg = 1 + hero.lvl + hero.weapon.dmgBonus; 
+hero.minDmg = 1 + hero.lvl -1;
+hero.weapons = [noWeapon, stick, shortSword];
+//hero.inventory = [];
 setStats();
 
 

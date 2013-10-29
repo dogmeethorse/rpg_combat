@@ -31,13 +31,13 @@ function loadEnemyPics(){
 }
 
 function  fillEnemyArray(){
-	enemies[0] = new Enemy(0,'Bones or Something', 11,1,0,20,0);
+	enemies[0] = new Enemy(0,'These are Supposed to be Bones', 11,1,0,20,0);
 	enemies[1] = new Enemy(1,'Mean Lady', 25,10,0,30,0);
 	enemies[2] = new Enemy(2,'Robed Jerk', 10,1,0,20,0);
 	enemies[3] = new Enemy(3,'Imp', 4,1,0,20,0); 
 	enemies[4] = new Enemy(4,'Angry Chest', 8,1,0,20,0);
 	enemies[5] = new Enemy(5,'Scary Shadow', 7,1,0,20,0);
-	enemies[6] = new Enemy(6,'Gross Stuff', 6,1,0,20,0);
+	enemies[6] = new Enemy(6,'Gross Thing', 6,1,0,20,0);
 	enemies[7] = new Enemy(7,'Skeleton',3,1,0,50,20);
 	enemies[8] = new Enemy(8,'Zombie', 5,1,0,20,0);
 }
