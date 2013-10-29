@@ -23,8 +23,7 @@ function createItemMenu(){
 	itemMenu.appendChild(weaponList);
 	itemMenu.appendChild(closeItems);
 	
-	return itemMenu;
-	
+	return itemMenu;	
 }
 
 function openItemMenu(){
@@ -34,4 +33,16 @@ function openItemMenu(){
 
 function closeItemMenu(itemMenu){
 	background.removeChild(itemMenu);
+	sendMessage("You are now wielding " + hero.weapon.name, true);
+}
+
+function healingPotion(name,strength,cost){
+	this.name = name;
+	this.strength = strength;
+	this.cost = cost;
+	
+	healingPotion.prototype.quaff = function(){
+		hero.hp += this.strength;
+		sendMessage("You quaff the "+ this.name + " and gain " + this.strength + "hp");
+	}
 }

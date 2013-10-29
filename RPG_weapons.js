@@ -13,12 +13,12 @@ function Weapon(name,dmgBonus, attackChanceBonus){
 	}
 	
 	Weapon.prototype.unequip = function(){
-		hero.mxDmg -= this.dmgBonus;
+		hero.maxDmg -= this.dmgBonus;
 		hero.atk -= this.attackChanceBonus;
 	}
 }
 
-var noWeapon = new Weapon('None', 0, 0);
+var noWeapon = new Weapon("Bare Hands", 0, 0);
 var stick = new Weapon('Wooden Stick', 2, 4)
 var dagger = new Weapon('Dagger', 4, 5);
 var shortSword = new Weapon('Short Sword', 6, 8);
