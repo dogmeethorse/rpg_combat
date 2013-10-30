@@ -5,17 +5,17 @@
 		<link href="RPG_combat.css" rel="stylesheet" type="text/css" media="all">
 		<title>Dragon Smasher</title>
 	</head>
-		<body>
+		<body onload='handleBegin()'>
 		<div id='background'>
 			<h1>DRAGON SMASHER</h1>
 			<canvas id='game_screen' width='400' height='400'>Canvas not supported on your browser</canvas>
    		   		<div class='game' id='stats'><p>Game stats go here.</p></div>    
    				<div class='game' id='command_card'>
    					<div style='text-align:center;margin-top:20px'>
-   					<button class='game' onclick="handle('fight');">FIGHT</button>
-   					<button class='game' onclick="handle('defend');">DEFEND</button>
-   					<button class='game' onclick="handle('item');">ITEM</button>
-   					<button class='game' onclick="handle('run');">RUN</button>
+   					<button class='game' id='fight' onclick="handle('fight');">FIGHT</button>
+   					<button class='game' id='shop' onclick="handle('shop');">SHOP</button>
+   					<button class='game' id='item' onclick="handle('item');">ITEM</button>
+   					<button class='game' id='run' onclick="handle('run');">RUN</button>
    					</div>
    				</div>
 
@@ -23,10 +23,11 @@
    					<p class="game">Message Box</p>
    				</div>
 			</div>
-			<script src="RPG_weapons.js"  type='text/javascript'></script> 		
+			<script src="RPG_items.js" type='text/javascript'></script>
+			<script src="RPG_menus.js"  type='text/javascript'></script> 		
 			<script src="RPG_combat.js" type='text/javascript' ></script>
 			<script src="RPG_enemies.js" type='text/javascript'></script>
-			<script src="RPG_items.js" type='text/javascript'></script>
+			
 		
 		</body>
 </html>

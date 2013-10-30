@@ -1,40 +1,34 @@
-function createItemMenu(){
-	var itemMenu = document.createElement('div');
+function Weapon(name,dmgBonus, attackChanceBonus, cost){
+	this.name = name;
+	this.dmgBonus = dmgBonus;
+	this.attackChanceBonus = attackChanceBonus;
+	this.cost = cost;
 	
-	itemMenu.setAttribute('class','game');
-	itemMenu.setAttribute('id', 'itemMenu');
-	itemMenu.innerHTML = '<h3>ITEMS<h3>'
 	
-	var weaponList = document.createElement('select');
-	
-	weaponList.setAttribute("onChange","hero.weapons[this.selectedIndex].equip()");
-	var option = [];
-	
-	for(var weap = 0; weap < hero.weapons.length; weap++){
-		option[weap] = document.createElement('option')
-		option[weap].setAttribute('value', hero.weapons[weap].name);
-		option[weap].innerHTML = hero.weapons[weap].name;
-		weaponList.appendChild(option[weap]);
+	Weapon.prototype.equip = function(){
+		hero.weapon.unequip();
+		hero.weapon = this;
+		hero.maxDmg += this.dmgBonus;
+		hero.atk += this.attackChanceBonus;
+		console.log("wielding :"+ hero.weapon.name);
 	}
 	
-	var closeItems = document.createElement('button');
-	closeItems.setAttribute('onclick', 'closeItemMenu(itemMenu)');
-	closeItems.innerHTML = "CLOSE";
-	itemMenu.appendChild(weaponList);
-	itemMenu.appendChild(closeItems);
-	
-	return itemMenu;	
+	Weapon.prototype.unequip = function(){
+		hero.maxDmg -= this.dmgBonus;
+		hero.atk -= this.attackChanceBonus;
+	}
 }
 
-function openItemMenu(){
-	itemMenu = createItemMenu();
-	background.appendChild(itemMenu);
-}
+var noWeapon = new Weapon("Bare Hands", 0, 0, 0);
+var stick = new Weapon('Wooden Stick', 2, 4, 5)
+var dagger = new Weapon('Dagger', 4, 5, 20);
+var shortSword = new Weapon('Short Sword', 6, 8, 50);
+var flail = new Weapon('Flail', 8, 8, 100);
+var longSword = new Weapon('Long Sword', 10, 10, 170);
 
-function closeItemMenu(itemMenu){
-	background.removeChild(itemMenu);
-	sendMessage("You are now wielding " + hero.weapon.name, true);
-}
+var shopWeapons = [stick, dagger, shortSword, flail, longSword];
+
+//Other Inventory
 
 function healingPotion(name,strength,cost){
 	this.name = name;

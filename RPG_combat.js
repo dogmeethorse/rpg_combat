@@ -16,7 +16,6 @@ const BEGIN    = 10;
 const ENDGAME  =  0;
 const COMBAT   = 20;
 const TREASURE = 30;
-const ITEMS    = 40;
 
 var state = BEGIN;
 
@@ -27,6 +26,11 @@ var background = document.getElementById('background');
 var outputElement = document.getElementById('output');
 var statOutputEl = document.getElementById('stats');
 var messageEl = document.getElementById('message_box');
+
+var fightButton= document.getElementById('fight');
+var shopButton = document.getElementById('shop');
+var itemButton = document.getElementById('item');
+var runButton = document.getElementById('run');
 
 var current_enemy = null;
 
@@ -50,6 +54,7 @@ function setStats(){
 
 function initCombat(){
 	console.log('init COMBAT');
+	shopButton.disabled= true;
 	current_enemy = enemies[randomInt(0,8)];
 	state = COMBAT;
 	current_enemy.greeting();
@@ -172,12 +177,13 @@ Enemy.prototype = new Game_Entity();
 function handleBegin(){
 	loadEnemyPics();
 	fillEnemyArray();
-	current_enemy = enemies[7];
-	current_enemy.draw();
-	console.log("Current Enemy: " + current_enemy.name);
-	console.log("Current Enemy hp = " + current_enemy.hp);
-	current_enemy.greeting();
-	state = COMBAT;
+	
+	fightButton.disabled = false;
+	shopButton.disabled = false;
+	
+	
+	state = TREASURE;
+	sendMessage("Press fight to begin your journey", true);
 }
 
 
@@ -202,6 +208,14 @@ function handleCombat(action){
 		case 'fight':
 			var result = hero.attack(current_enemy);
 			resolveCombat(result);
+			if(current_enemy.isAlive()){
+				current_enemy.takeTurn();
+			}
+			else{
+				var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
+				sendMessage(feedback, false);
+				endCombat('victory');
+			}
 			break;
 		case 'defend':
 			break;
@@ -210,60 +224,26 @@ function handleCombat(action){
 			break;
 		case 'run':
 			if(hero.run()){
-				return;
+				state = TREASURE;
+				handleTreasure('run');
+			}
+			else{
+				current_enemy.takeTurn();
 			}
 			break;
 	}	
-	if(current_enemy.isAlive()){
-		current_enemy.takeTurn();
-	}
-	else{
-		var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
-		sendMessage(feedback, false);
-		endCombat('victory');
-	}
-
-}
-function openItemMenu(){
-	var itemMenu = document.createElement('div');
-	
-	itemMenu.setAttribute('class','game');
-	itemMenu.setAttribute('id', 'itemMenu');
-	itemMenu.innerHTML = '<h3>ITEMS<h3>'
-	
-	var weaponList = document.createElement('select');
-	var option = [];
-	
-	for(var weap = 0; weap < hero.weapons.length; weap++){
-		option[weap] = document.createElement('option')
-		option[weap].setAttribute('value', hero.weapons[weap].name);
-		option[weap].innerHTML = hero.weapons[weap].name;
-		weaponList.appendChild(option[weap]);
-	}
-	
-	var closeItems = document.createElement('button');
-	closeItems.setAttribute('onclick', 'closeItemMenu(itemMenu)');
-	closeItems.innerHTML = "CLOSE";
-	
-	
-	background.appendChild(itemMenu);
-	itemMenu.appendChild(weaponList);
-	itemMenu.appendChild(closeItems);
-}
-
-function closeItemMenu(itemMenu){
-	background.removeChild(itemMenu);
 }
 
 function giveTreasure(){
 	var xpGain = current_enemy.hp;
 	var gldGain = current_enemy.maxDmg;
-	sendMessage( "you got " + xpGain + "XP and " + gldGain + " gold.", false );
+	sendMessage( "you got " + xpGain + "xp and " + gldGain + " gold.", false );
 	hero.xp += xpGain;
 	hero.gld += gldGain;
 }
 
 function handleTreasure(action){
+	shopButton.disabled= false;
 	console.log('state = TREASURE');
 	switch(action){
 		case 'fight':
@@ -271,6 +251,14 @@ function handleTreasure(action){
 			break;
 		case 'dead enemy':
 			giveTreasure();
+			break;
+		case 'item':
+			openItemMenu();
+			break;
+		case 'shop':
+			openShopMenu();
+			break;
+		case 'run':
 			break;
 	}
 }
@@ -282,9 +270,11 @@ function handle(action){
 			handleBegin();
 			break;
 		case COMBAT:
+			shopButton.disabled = true;
 			handleCombat(action);
 			break;
 		case TREASURE:
+			shopButton.disabled = false;
 			handleTreasure(action);
 			break;
 	}
