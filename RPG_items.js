@@ -1,3 +1,7 @@
+const SMALL_POTION_COST = 4;
+const LARGE_POTION_COST = 10;
+
+
 function Weapon(name,dmgBonus, attackChanceBonus, cost){
 	this.name = name;
 	this.dmgBonus = dmgBonus;
@@ -30,7 +34,7 @@ var shopWeapons = [stick, dagger, shortSword, flail, longSword];
 
 //Other Inventory
 
-function healingPotion(name,strength,cost){
+function healingPotion(name,strength, cost){
 	this.name = name;
 	this.strength = strength;
 	this.cost = cost;
@@ -39,4 +43,45 @@ function healingPotion(name,strength,cost){
 		hero.hp += this.strength;
 		sendMessage("You quaff the "+ this.name + " and gain " + this.strength + "hp");
 	}
+	
+	healingPotion.prototype.buy = function(){
+		console.log(this);
+		console.log('trying to buy potion');
+		console.log("name ="+ this.name + "cost = " + this.cost);
+		console.log("buying Potion");
+		var pName = this.name;
+		var pstrength = this.strength;
+		var pCost = this.cost;
+		hero.inventory.push(new healingPotion(this.name , this.strength, this.cost));
+		hero.gld -= this.cost;
+		console.log("hero inventory length ="+ hero.inventory.length);
+		console.log(hero.inventory);
+		
+	}
 }
+
+var smallPotion = new healingPotion('Small Potion', 5, 4);//cost is 4 gold
+var largePotion = new healingPotion('Large Potion', 10, 12);
+
+/*function buyPotion(type){
+	console.log("trying to buy potion");
+	switch(type){
+		case 'Small Potion':
+			if(hero.gld >= SMALL_POTION_COST){
+				console.log("bought small potion");
+				hero.gld-= SMALL_POTION_COST;
+				hero.inventory.push(new healingPotion('Small Potion', 5));
+			}
+			break;
+		case 'Large Potion':
+			if(hero.gld >=LARGE_POTION_COST){
+				console.log("bought large potion");
+				hero.gld -=LARGE_POTION_COST;
+				hero.inventory.push(new healingPotion('Large Potion', 10));
+			}
+			break;
+	}
+	setStats();
+}*/
+
+var shopInventory =[ smallPotion, largePotion];

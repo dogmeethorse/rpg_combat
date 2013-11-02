@@ -180,7 +180,7 @@ function handleBegin(){
 	
 	fightButton.disabled = false;
 	shopButton.disabled = false;
-	
+	runButton.disabled = false;
 	
 	state = TREASURE;
 	sendMessage("Press fight to begin your journey", true);
@@ -287,11 +287,11 @@ hero.weapon = noWeapon;
 hero.name = "You";
 hero.xp = 0;
 hero.lvl = 1;
-hero.gld = 0;
+hero.gld = 100;
 hero.maxDmg = 1 + hero.lvl + hero.weapon.dmgBonus; 
 hero.minDmg = 1 + hero.lvl -1;
 hero.weapons = [noWeapon, stick, shortSword];
-//hero.inventory = [];
+hero.inventory = [];
 setStats();
 
 
