@@ -41,21 +41,28 @@ function healingPotion(name,strength, cost){
 	
 	healingPotion.prototype.quaff = function(){
 		hero.hp += this.strength;
-		sendMessage("You quaff the "+ this.name + " and gain " + this.strength + "hp");
+		
+		hero.inventory.splice(hero.inventory.indexOf(this), 1);
+		setStats();
+		closeItemMenu(itemMenu);
+		sendMessage("You quaff the "+ this.name + " and gain " + this.strength + "hp", false);
 	}
 	
 	healingPotion.prototype.buy = function(){
 		console.log(this);
 		console.log('trying to buy potion');
 		console.log("name ="+ this.name + "cost = " + this.cost);
-		console.log("buying Potion");
-		var pName = this.name;
-		var pstrength = this.strength;
-		var pCost = this.cost;
-		hero.inventory.push(new healingPotion(this.name , this.strength, this.cost));
-		hero.gld -= this.cost;
-		console.log("hero inventory length ="+ hero.inventory.length);
-		console.log(hero.inventory);
+		if(hero.gld >= this.cost){
+			console.log("buying Potion");
+			
+			hero.inventory.push(new healingPotion(this.name , this.strength, this.cost));
+			hero.gld -= this.cost;
+			
+			sendMessage("You bought a "+ this.name,true);
+			
+			console.log("hero inventory length ="+ hero.inventory.length);
+			console.log(hero.inventory);
+		}
 		
 	}
 }

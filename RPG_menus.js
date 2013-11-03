@@ -1,8 +1,15 @@
 function buyItem(item){
 	return function(){
-		shopInventory[item].buy()
+		shopInventory[item].buy();
 	}
 }
+
+function useItem(item){
+	return function(){
+		hero.inventory[item].quaff();
+	}
+}
+
 function createItemMenu(){
 	var itemMenu = document.createElement('div');
 	
@@ -28,10 +35,11 @@ function createItemMenu(){
 	
 	for(itemNo = 0; itemNo < hero.inventory.length; itemNo++){
 		itemButtons[itemNo] = document.createElement('button');
-		itemButtons[itemNo].setAttribute('value',hero.inventory[itemNo]);
-		itemButtons[itemNo].click = function(){ hero.inventory[itemNo].quaff;};// not going to work
-		itemButtons[itemNo].innerHTML = hero.inventory[itemNo].name;
-		itemsToBuy.appendChild(itemButtons[itemNo]);	
+		
+		itemButtons[itemNo].addEventListener('click', useItem(itemNo) ,false);
+		
+		itemButtons[itemNo].textContent = hero.inventory[itemNo].name;
+		itemList.appendChild(itemButtons[itemNo]);	
 	}
 	
 	var closeItems = document.createElement('button');
