@@ -10,6 +10,17 @@
  * Run works and fight works. Now adding items. should create itemMenu. and then have functions 
  * that update it  open it and close it.
  * right now item menu won't close after second time you open it.
+ ****************************************************************************************************
+ * All buttons now work to some extent.
+ * now
+ 1. Add intro screen
+ 2. Make it so you can buy weapons.
+ 3. add screen effects during combat 
+ 4. max hp so potions can't take you over your max hp
+ 5. make it so you increase in level and grow stronger
+ 6. make it so you can die.
+ 7. make it so game is an object?
+ 8. sound with proper loader.
  */
 
 const BEGIN    = 10;
@@ -57,6 +68,7 @@ function initCombat(){
 	shopButton.disabled= true;
 	current_enemy = enemies[randomInt(0,8)];
 	state = COMBAT;
+	fightArea.draw();
 	current_enemy.greeting();
 	current_enemy.draw();
 	console.log("enemy hp = " + current_enemy.hp);
@@ -69,6 +81,7 @@ function endCombat(how){
 	current_enemy.die();
 	console.log("killing enemy hp reset to " + current_enemy.hp);
 	d_ctx.clearRect(0,0,400,400);
+	fightArea.draw();
 	state = TREASURE;
 	if(how =='victory'){
 		handleTreasure('dead enemy');
@@ -290,7 +303,7 @@ hero.lvl = 1;
 hero.gld = 100;
 hero.maxDmg = 1 + hero.lvl + hero.weapon.dmgBonus; 
 hero.minDmg = 1 + hero.lvl -1;
-hero.weapons = [noWeapon, stick, shortSword];
+hero.weapons = [noWeapon];
 hero.inventory = [];
 setStats();
 

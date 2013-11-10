@@ -4,6 +4,12 @@ function buyItem(item){
 	}
 }
 
+function buyWeapon(weapon){
+	return function(){
+		shopWeapons[weapon].buy();
+	}
+}
+
 function useItem(item){
 	return function(){
 		hero.inventory[item].quaff();
@@ -87,7 +93,7 @@ function createShopMenu(){
 	//adding weapons
 	for(var weap = 0; weap < shopWeapons.length; weap++){
 		shopButtons[weap] = document.createElement('button')
-		shopButtons[weap].setAttribute('value', shopWeapons[weap].name);
+		shopButtons[weap].addEventListener('click', buyWeapon(weap),false);
 		shopButtons[weap].innerHTML = shopWeapons[weap].name + " price " + shopWeapons[weap].cost + "gld";
 		weaponList.appendChild(shopButtons[weap]);
 	}
@@ -98,7 +104,7 @@ function createShopMenu(){
 	var itemNo;
 	for(itemNo = 0; itemNo < shopInventory.length; itemNo++ ){
 		itemButtons[itemNo] = document.createElement('button');
-		itemButtons[itemNo].textContent= shopInventory[itemNo].name;
+		itemButtons[itemNo].textContent= shopInventory[itemNo].name + " " +shopInventory[itemNo].cost + "gld";
 		itemButtons[itemNo].addEventListener('click', buyItem(itemNo),false);
 		
 		itemsToBuy.appendChild(itemButtons[itemNo]);

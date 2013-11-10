@@ -1,6 +1,3 @@
-const SMALL_POTION_COST = 4;
-const LARGE_POTION_COST = 10;
-
 
 function Weapon(name,dmgBonus, attackChanceBonus, cost){
 	this.name = name;
@@ -21,10 +18,23 @@ function Weapon(name,dmgBonus, attackChanceBonus, cost){
 		hero.maxDmg -= this.dmgBonus;
 		hero.atk -= this.attackChanceBonus;
 	}
+	Weapon.prototype.buy = function(){
+		console.log(this);
+		console.log(" buying = "+ this.name + " cost = " + this.cost);
+		if(hero.gld >= this.cost){
+			hero.weapons.push(new Weapon(this.name , this.dmgBonus, this.cost));
+			hero.gld -= this.cost;		
+			sendMessage("You bought a "+ this.name,true);
+		}
+		else{
+			sendMessage("You cannot afford "+ this.name, true);
+		}
+		setStats();
+	}
 }
 
 var noWeapon = new Weapon("Bare Hands", 0, 0, 0);
-var stick = new Weapon('Wooden Stick', 2, 4, 5)
+var stick = new Weapon('Wooden Stick', 2, 4, 5);
 var dagger = new Weapon('Dagger', 4, 5, 20);
 var shortSword = new Weapon('Short Sword', 6, 8, 50);
 var flail = new Weapon('Flail', 8, 8, 100);
@@ -62,33 +72,16 @@ function healingPotion(name,strength, cost){
 			
 			console.log("hero inventory length ="+ hero.inventory.length);
 			console.log(hero.inventory);
+			setStats();
+		}
+		else{
+			sendMessage("You cannot afford "+ this.name, true);
 		}
 		
 	}
 }
 
-var smallPotion = new healingPotion('Small Potion', 5, 4);//cost is 4 gold
-var largePotion = new healingPotion('Large Potion', 10, 12);
-
-/*function buyPotion(type){
-	console.log("trying to buy potion");
-	switch(type){
-		case 'Small Potion':
-			if(hero.gld >= SMALL_POTION_COST){
-				console.log("bought small potion");
-				hero.gld-= SMALL_POTION_COST;
-				hero.inventory.push(new healingPotion('Small Potion', 5));
-			}
-			break;
-		case 'Large Potion':
-			if(hero.gld >=LARGE_POTION_COST){
-				console.log("bought large potion");
-				hero.gld -=LARGE_POTION_COST;
-				hero.inventory.push(new healingPotion('Large Potion', 10));
-			}
-			break;
-	}
-	setStats();
-}*/
+var smallPotion = new healingPotion('Small Potion', 5, 5);
+var largePotion = new healingPotion('Large Potion', 20, 15);
 
 var shopInventory =[ smallPotion, largePotion];
