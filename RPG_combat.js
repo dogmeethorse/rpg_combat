@@ -14,7 +14,7 @@
  * All buttons now work to some extent.
  * now
  1. Add intro screen
- 2. Make it so you can buy weapons.
+ 2. Make it so you can buy weapons.  <----- DONE!
  3. add screen effects during combat 
  4. max hp so potions can't take you over your max hp
  5. make it so you increase in level and grow stronger
@@ -85,6 +85,8 @@ function endCombat(how){
 	state = TREASURE;
 	if(how =='victory'){
 		handleTreasure('dead enemy');
+		console.log('checking hero level.');
+		hero.checkLevel();
 	}
 	sendMessage("Press 'fight' button to fight another monster.", false);
 }
@@ -298,13 +300,38 @@ function handle(action){
 hero = new Game_Entity(10,1);
 hero.weapon = noWeapon;
 hero.name = "You";
+hero.maxHp = 10;
 hero.xp = 0;
+hero.nextLvlXp = 100;
 hero.lvl = 1;
 hero.gld = 100;
 hero.maxDmg = 1 + hero.lvl + hero.weapon.dmgBonus; 
 hero.minDmg = 1 + hero.lvl -1;
 hero.weapons = [noWeapon];
 hero.inventory = [];
+
+hero.levelUp = function(){
+	console.log('hero gaining new level');
+	hero.lvl++;
+	sendMessage("You have reached the next Level.", false);
+	hero.nextLvlXp =  hero.nextLvlXp * 2;
+	sendMessage("xp to next level is " + hero.nextLvlXp, false);
+	hero.maxDmg = 1 + hero.lvl + hero.weapon.dmgBonus; 
+	hero.minDmg = 1 + hero.lvl -1;
+	hero.maxHp += 10;
+}
+
+hero.checkLevel = function(){
+	console.log(hero.nextLvlXp +" xp for next lvl " + hero.xp + " current xp");
+	if(hero.xp >= hero.nextLvlXp){
+		hero.levelUp();
+	}
+	else{
+		console.log('no new level');
+	}
+}
+
+
 setStats();
 
 
