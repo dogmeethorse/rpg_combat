@@ -21,6 +21,7 @@
  6. make it so you can die.
  7. make it so game is an object? <---- meh.
  8. sound with proper loader.
+ 9. Have to change enemy turn to start as an event so it doesn't overlap; with hero turn. or some other solution.
  */
 
 const BEGIN    = 10;
@@ -179,7 +180,7 @@ function Enemy(index, name,hp,dmg,aggro,atk,esc){
 				game_box.shake();
 			}
 			else if(result >=1){
-				fightArea.flash();
+				fightArea.redFlash();
 			}
 			sendMessage( feedback, false);
 		}
@@ -210,6 +211,7 @@ function handleBegin(){
 function resolveCombat(result){
 	if(result!= null){
 		var feedback = "You hit the " + current_enemy.name + " for " + result + " damage!"
+		fightArea.whiteFlash();
 		console.log("feedback string = " + feedback);
 		sendMessage( feedback, true);
 		console.log ("Enemy hp = " + current_enemy.hp);
