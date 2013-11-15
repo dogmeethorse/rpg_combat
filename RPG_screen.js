@@ -25,23 +25,37 @@ game_box.shake = function(){
 	game_box.shakeAmt = 50;
 	
 	function doShake(){
-		console.log("shaking shakePos =" + game_box.shakePos);
 		if (game_box.shakePos >= game_box.shakeStart) {
 			game_box.shakePos = game_box.shakeStart - game_box.shakeAmt;
 			background.style.marginLeft =  game_box.shakePos +"px";
 		}
 		else{
-			shakePos = shakeStart + (2*shakeAmt);
+			game_box.shakePos = game_box.shakeStart + (2 * game_box.shakeAmt);
 			background.style.marginLeft = game_box.shakePos  + "px";
-			game_box.shakeAmt -= 50*(game_box.shakeAmt/game_box.shakeStart);
+			game_box.shakeAmt -= 50 * (game_box.shakeAmt/200);
 		}
-		if (game_box.shakeAmt > 2){
-			setTimeout(doShake, game_box.shakeAmt);
+		if (Math.abs(game_box.shakeAmt) > 2){
+			setTimeout(doShake, Math.abs(game_box.shakeAmt));
 		}
 		else{
 			background.style.marginLeft = game_box.shakeStart  + "px";
+			buttonsOn(true,true,false,true);
 		}
 	}	
-	
+	buttonsOff(true,true,true,true);
 	doShake();
+}
+
+function buttonsOff(fight,item,shop,run){
+	if(fight) fightButton.disabled = true;
+	if(item)  itemButton.disabled  = true;
+	if(shop)  shopButton.disabled  = true;
+	if(run)   runButton.disabled   = true;
+}
+
+function buttonsOn(fight,item,shop,run){
+	if(fight) fightButton.disabled = false;
+	if(item)  itemButton.disabled  = false;
+	if(shop)  shopButton.disabled  = false;
+	if(run)   runButton.disabled   = false;
 }

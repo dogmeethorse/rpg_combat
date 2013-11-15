@@ -4,7 +4,7 @@
  * the next step is to make it so that the message box sends the user input so that we can test to see if the 
  * program is functioning properly so that we can debug.
  * Now I added some sample dialog and a name prop to enemy.
- * GET ATTACKS WORKING THEN ADD GAME STATES.
+ * GET ATTACKS WORKING THEN ADD GAME STATES. <---- Done.
  *
  *
  * Run works and fight works. Now adding items. should create itemMenu. and then have functions 
@@ -15,11 +15,11 @@
  * now
  1. Add intro screen
  2. Make it so you can buy weapons.  <----- DONE!
- 3. add screen effects during combat 
+ 3. add screen effects during combat <------Shaking implemented. Now need to do screen flashing.
  4. max hp so potions can't take you over your max hp
- 5. make it so you increase in level and grow stronger
+ 5. make it so you increase in level and grow stronger <-----You can level up now.
  6. make it so you can die.
- 7. make it so game is an object?
+ 7. make it so game is an object? <---- meh.
  8. sound with proper loader.
  */
 
@@ -174,6 +174,10 @@ function Enemy(index, name,hp,dmg,aggro,atk,esc){
 		if(result != null){
 			var feedback = "The " + this.name + " hit you for " + result + " damage!"
 			console.log("feedback string = " + feedback);
+			if(result >= 5){
+				console.log("doing shake");
+				game_box.shake();
+			}
 			sendMessage( feedback, false);
 		}
 		else{
@@ -193,9 +197,7 @@ function handleBegin(){
 	loadEnemyPics();
 	fillEnemyArray();
 	
-	fightButton.disabled = false;
-	shopButton.disabled = false;
-	runButton.disabled = false;
+	buttonsOn(true,true,true,true);
 	
 	state = TREASURE;
 	sendMessage("Press fight to begin your journey", true);
