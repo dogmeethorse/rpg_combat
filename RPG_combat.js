@@ -178,6 +178,9 @@ function Enemy(index, name,hp,dmg,aggro,atk,esc){
 				console.log("doing shake");
 				game_box.shake();
 			}
+			else if(result >=1){
+				fightArea.flash();
+			}
 			sendMessage( feedback, false);
 		}
 		else{

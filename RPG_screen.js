@@ -13,7 +13,30 @@ fightArea.draw = function(){
 }
 
 fightArea.flash = function(){
-
+	fightArea.counter = 0;
+	buttonsOff(true,true,true,true);
+	
+	function doFlash(){
+		if(fightArea.counter % 2=== 0){
+			d_ctx.fillStyle = "red";
+			d_ctx.globalAlpha  = 0.5;
+			d_ctx.fillRect(0,0,400,400);
+		}
+		else{
+			d_ctx.globalAlpha = 1;
+			d_ctx.clearRect(0,0,400,400);
+			fightArea.draw();
+			current_enemy.draw();
+		}
+		fightArea.counter++;
+		if (fightArea.counter < 6){
+			setTimeout(doFlash,50);
+		}
+		else{
+			buttonsOn(true,true,false,true);
+		}
+	}
+	doFlash();
 }
 
 game_box.shake = function(){
