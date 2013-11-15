@@ -68,7 +68,7 @@ div.game {
 	height:200px;		
 }
 #message_box{
-	position:relative;
+	position:relative; 
 	clear:top;
 	width: 565px;
 	height: 90px;
