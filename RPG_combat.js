@@ -21,7 +21,7 @@
  6. make it so you can die.
  7. make it so game is an object? <---- meh.
  8. sound with proper loader.
- 9. Have to change enemy turn to start as an event so it doesn't overlap; with hero turn. or some other solution.
+ 9. Have to change enemy turn to start as an event so it doesn't overlap; with hero turn. or some other solution. <--- DONE!
  */
 
 const BEGIN    = 10;
