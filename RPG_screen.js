@@ -2,6 +2,8 @@
  * functions and objects for drawing things and visual effects.
  */
 var game_box = {}
+var effectsDone = new CustomEvent("effectsDone");
+//dragon_screen.addEventListener("effectsDone", handleEnemy, false);
 
 var fightArea = {};
 
@@ -62,6 +64,7 @@ fightArea.whiteFlash = function(){
 		}
 		else{
 			buttonsOn(true,true,false,true);
+			handleEnemy();
 		}
 	}
 	doFlash();

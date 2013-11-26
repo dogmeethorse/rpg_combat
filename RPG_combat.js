@@ -230,16 +230,6 @@ function handleCombat(action){
 		case 'fight':
 			var result = hero.attack(current_enemy);
 			resolveCombat(result);
-			if(current_enemy.isAlive()){
-				current_enemy.takeTurn();
-			}
-			else{
-				var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
-				sendMessage(feedback, false);
-				endCombat('victory');
-			}
-			break;
-		case 'defend':
 			break;
 		case 'item':
 			openItemMenu();
@@ -250,10 +240,21 @@ function handleCombat(action){
 				handleTreasure('run');
 			}
 			else{
-				current_enemy.takeTurn();
+				handleEnemy();
 			}
 			break;
 	}	
+}
+
+function handleEnemy(){
+			if(current_enemy.isAlive()){
+				current_enemy.takeTurn();
+			}
+			else{
+				var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
+				sendMessage(feedback, false);
+				endCombat('victory');
+			}
 }
 
 function giveTreasure(){
