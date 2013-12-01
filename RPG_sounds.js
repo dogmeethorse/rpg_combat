@@ -39,6 +39,8 @@
  	this.enemyMiss.addEventListener( "canplaythrough", sounds.loaded, false);
  	this.heroMiss.addEventListener(  "canplaythrough", sounds.loaded, false);
  	
+ 	this.heroMiss.addEventListener("ended", handleEnemy, false);
+ 	
  	
  	this.regHit.src    = "sounds/reg_hit.wav";
  	this.bigHit.src    = "sounds/big_hit.wav";

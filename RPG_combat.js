@@ -1,5 +1,7 @@
 /*
  * All images created by Chris Bellinger for his Open Source Game Heroine Dusk.
+ * Hit Sounds created by BroumBroum from freesound.org
+ * Miss Sounds created by Qoubodup from freesound.org
  * We now have a current enemy and have created a slime enemy
  * the next step is to make it so that the message box sends the user input so that we can test to see if the 
  * program is functioning properly so that we can debug.
@@ -20,7 +22,7 @@
  5. make it so you increase in level and grow stronger <-----You can level up now.
  6. make it so you can die.
  7. make it so game is an object? <---- meh.
- 8. sound with proper loader.
+ 8. sound with proper loader. <--- DONE!
  9. Have to change enemy turn to start as an event so it doesn't overlap; with hero turn. or some other solution. <--- DONE!
  */
 
@@ -178,13 +180,19 @@ function Enemy(index, name,hp,dmg,aggro,atk,esc){
 			if(result >= 5){
 				console.log("doing shake");
 				game_box.shake();
+				sounds.bigHit.play();
 			}
 			else if(result >=1){
 				fightArea.redFlash();
+				sounds.regHit.play();
+			}
+			else{
+				sounds.smallHit.play();
 			}
 			sendMessage( feedback, false);
 		}
 		else{
+			sounds.enemyMiss.play();
 			var feedback = "The " + this.name + " missed you!";
 			sendMessage(feedback, false);
 		}
@@ -213,11 +221,11 @@ function handleBegin(){
 		}, 100);
 }
 
-
 function resolveCombat(result){
 	if(result!= null){
 		var feedback = "You hit the " + current_enemy.name + " for " + result + " damage!"
 		fightArea.whiteFlash();
+		sounds.regHit.play();
 		console.log("feedback string = " + feedback);
 		sendMessage( feedback, true);
 		console.log ("Enemy hp = " + current_enemy.hp);
@@ -225,10 +233,10 @@ function resolveCombat(result){
 	else{
 		console.log("miss");
 		var feedback = "You missed the " + current_enemy.name + "!";
+		sounds.heroMiss.play();
 		sendMessage(feedback, true);
+		
 	}
-	
-
 }
 
 function handleCombat(action){
