@@ -14,7 +14,7 @@ broumbroum ( http://www.freesound.org/people/broumbroum)
 	-Monster getting hit
 	-Hero getting hit
 	
-qubodup
+qubodup (http://www.freesound.org/people/qubodup/)
 
 	-hero missing
 	-monster missing
