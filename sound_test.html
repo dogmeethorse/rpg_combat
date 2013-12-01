@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title></title>
+</head>
+<body>
+<div>
+
+<p>test to see if we have errors on sound.js</p>
+<button id="button1" >big hit</button>
+<button id="button2" >small hit</button>
+<button id="button3" >hero miss</button>
+<button id="button4" >enemy miss</button>
+</div>
+
+<script src="RPG_sounds.js">
+
+</script>
+<script>
+	//alert("hello");
+	sounds.init();
+	var mySound = document.createElement("audio");
+	document.body.appendChild(mySound);
+	
+
+	
+	
+	//sounds.enemyHit.play();
+	var button1 = document.getElementById("button1");
+	var button2 = document.getElementById("button2");
+	
+	button1.onclick = function(){sounds.bigHit.play()};
+	button2.onclick = function(){sounds.regHit.play()};
+	button3.onclick = function(){sounds.heroMiss.play()};
+	button4.onclick = function(){sounds.enemyMiss.play()};
+	
+	
+</script>
+</body>
+</html>

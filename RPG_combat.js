@@ -198,13 +198,19 @@ Enemy.prototype.constructor = Enemy();
 Enemy.prototype = new Game_Entity();
 
 function handleBegin(){
+	buttonsOn(false,false,false,false);
 	loadEnemyPics();
 	fillEnemyArray();
-	
-	buttonsOn(true,true,true,true);
-	
-	state = TREASURE;
-	sendMessage("Press fight to begin your journey", true);
+	sounds.init();
+
+	var checkLoading = setInterval(function(){
+		if(sounds.loadComplete()){
+				buttonsOn(true,true,true,true);
+				state = TREASURE;
+				sendMessage("Press fight to begin your journey", true);
+				clearInterval(checkLoading);
+			}
+		}, 100);
 }
 
 
