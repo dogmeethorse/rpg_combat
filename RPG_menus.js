@@ -71,13 +71,14 @@ function openItemMenu(){
 function closeItemMenu(itemMenu){
 	background.removeChild(itemMenu);
 	sendMessage("You are now wielding " + hero.weapon.name, true);
-	
-	fightButton.disabled = false;
-	shopButton.disabled  = false;
-	itemButton.disabled  = false;
-	runButton.disabled   = false;
+	if(state != COMBAT){
+		fightButton.disabled = false;
+		shopButton.disabled  = false;
+		itemButton.disabled  = false;
+		runButton.disabled   = false;
+	}
 	if(state == COMBAT){
-		current_enemy.takeTurn();		
+		handleEnemy();		
 	}
 }
 
@@ -121,9 +122,7 @@ function createShopMenu(){
 }
 
 function openShopMenu(){
-	fightButton.disabled = true;
-	shopButton.disabled  = true;
-	runButton.disabled   = true;
+	buttonsOn(false,false,false,false);
 	
 	shopMenu = createShopMenu();
 	background.appendChild(shopMenu);
@@ -135,5 +134,5 @@ function closeShopMenu(shopMenu){
 	fightButton.disabled = false;
 	shopButton.disabled  = false;
 	itemButton.disabled  = false;
-	runButton.disabled   = false;
+	runButton.disabled   = true;
 }

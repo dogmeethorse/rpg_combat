@@ -12,7 +12,7 @@
  * Run works and fight works. Now adding items. should create itemMenu. and then have functions 
  * that update it  open it and close it.
  * right now item menu won't close after second time you open it.
- ****************************************************************************************************
+ *****************************************************************************************
  * All buttons now work to some extent.
  * now
  1. Add intro screen
@@ -24,6 +24,16 @@
  7. make it so game is an object? <---- meh.
  8. sound with proper loader. <--- DONE!
  9. Have to change enemy turn to start as an event so it doesn't overlap; with hero turn. or some other solution. <--- DONE!
+ *****************************************************************************************
+ 1. Finish hero death handling
+ 2. Add sounds for running away and critical hero attack
+ 3. Fix shop Menu with CSS
+ 4. max hp so potions can't take you over your max hp 
+ 5. Animation for big hit on a monster
+ 6. fix setstats() calls so damage appears immediately when you take damage.
+ 7. Animation for running away.
+ 8. something should happen when you defeat a monster
+ 9. more exciting level up.
  */
 
 const BEGIN    = 10;
@@ -68,7 +78,7 @@ function setStats(){
 
 function initCombat(){
 	console.log('init COMBAT');
-	shopButton.disabled= true;
+	buttonsOn(true,true,false,true);
 	current_enemy = enemies[randomInt(0,8)];
 	state = COMBAT;
 	fightArea.draw();
@@ -189,7 +199,7 @@ function Enemy(index, name,hp,dmg,aggro,atk,esc){
 			else{
 				sounds.smallHit.play();
 			}
-			sendMessage( feedback, false);
+			sendMessage(feedback, false);
 		}
 		else{
 			sounds.enemyMiss.play();
@@ -206,6 +216,7 @@ Enemy.prototype.constructor = Enemy();
 Enemy.prototype = new Game_Entity();
 
 function handleBegin(){
+	game_box.intro();
 	buttonsOn(false,false,false,false);
 	loadEnemyPics();
 	fillEnemyArray();
@@ -213,7 +224,8 @@ function handleBegin(){
 
 	var checkLoading = setInterval(function(){
 		if(sounds.loadComplete()){
-				buttonsOn(true,true,true,true);
+				console.log("load complete");
+				buttonsOn(true,true,true,false);
 				state = TREASURE;
 				sendMessage("Press fight to begin your journey", true);
 				clearInterval(checkLoading);
@@ -240,6 +252,7 @@ function resolveCombat(result){
 }
 
 function handleCombat(action){
+	buttonsOn(false,false,false,false);
 	switch(action){
 		case 'fight':
 			var result = hero.attack(current_enemy);
@@ -261,14 +274,26 @@ function handleCombat(action){
 }
 
 function handleEnemy(){
-			if(current_enemy.isAlive()){
-				current_enemy.takeTurn();
-			}
-			else{
-				var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
-				sendMessage(feedback, false);
-				endCombat('victory');
-			}
+	if(current_enemy.isAlive()){
+		buttonsOn(false, false, false, false);
+		setTimeout(function(){
+			console.log("first timeout");
+		 	current_enemy.takeTurn();
+		 	setStats();
+			setTimeout(function(){
+				buttonsOn(true,true,false,true);
+				console.log("turn back on buttons");
+			},200);
+		}, 200);
+	}
+	else{
+		var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
+		sendMessage(feedback, false);
+		endCombat('victory');
+	}
+	if(hero.hp <= 0){
+		hero.die();
+	}
 }
 
 function giveTreasure(){
@@ -280,7 +305,7 @@ function giveTreasure(){
 }
 
 function handleTreasure(action){
-	shopButton.disabled= false;
+	buttonsOn(true,true,true,false);
 	console.log('state = TREASURE');
 	switch(action){
 		case 'fight':
@@ -300,6 +325,13 @@ function handleTreasure(action){
 	}
 }
 
+function handleEnd(){
+	hero.init();
+	game_box.restart();
+	state = TREASURE;
+	sendMessage("Another nameless warrior tries his luck. Click fight to begin your adventure.", true);
+}
+
 function handle(action){
 	console.log("event function triggering " + action);
 	switch(state){
@@ -311,8 +343,12 @@ function handle(action){
 			handleCombat(action);
 			break;
 		case TREASURE:
-			shopButton.disabled = false;
+			//shopButton.disabled = false;
 			handleTreasure(action);
+			break;
+		case ENDGAME:
+			console.log("handling end");
+			handleEnd();
 			break;
 	}
 	console.log("setting stats");
@@ -320,17 +356,20 @@ function handle(action){
 }
 
 hero = new Game_Entity(10,1);
-hero.weapon = noWeapon;
-hero.name = "You";
-hero.maxHp = 10;
-hero.xp = 0;
-hero.nextLvlXp = 100;
-hero.lvl = 1;
-hero.gld = 100;
-hero.maxDmg = 1 + hero.lvl + hero.weapon.dmgBonus; 
-hero.minDmg = 1 + hero.lvl -1;
-hero.weapons = [noWeapon];
-hero.inventory = [];
+
+hero.init = function(){
+	hero.weapon = noWeapon;
+	hero.name = "You";
+	hero.maxHp = 10;
+	hero.xp = 10;
+	hero.nextLvlXp = 100;
+	hero.lvl = 1;
+	hero.gld = 100;
+	hero.maxDmg = 1 + hero.lvl + hero.weapon.dmgBonus; 
+	hero.minDmg = 1 + hero.lvl -1;
+	hero.weapons = [noWeapon];
+	hero.inventory = [];
+}
 
 hero.levelUp = function(){
 	console.log('hero gaining new level');
@@ -353,7 +392,13 @@ hero.checkLevel = function(){
 	}
 }
 
+hero.die = function(){
+	sendMessage("You have fallen in battle. You will not be remembered.", false);
+	state = ENDGAME;
+	game_box.end();
+}
 
+hero.init();
 setStats();
 
 

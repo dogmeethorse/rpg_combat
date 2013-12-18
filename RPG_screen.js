@@ -15,12 +15,12 @@ fightArea.draw = function(){
 }
 
 fightArea.redFlash = function(){
-	fightArea.counter = 0;
+	fightArea.counterR = 0;
 	buttonsOff(true,true,true,true);
 	
 	function doFlash(){
-		console.log(fightArea.counter);
-		if(fightArea.counter % 2=== 0){
+		console.log(fightArea.counterR);
+		if(fightArea.counterR % 2=== 0){
 			d_ctx.fillStyle = "red";
 			d_ctx.globalAlpha  = 0.5;
 			d_ctx.fillRect(0,0,400,400);
@@ -31,8 +31,8 @@ fightArea.redFlash = function(){
 			fightArea.draw();
 			current_enemy.draw();
 		}
-		fightArea.counter++;
-		if (fightArea.counter < 6){
+		fightArea.counterR++;
+		if (fightArea.counterR < 6){
 			setTimeout(doFlash,50);
 		}
 		else{
@@ -99,6 +99,39 @@ game_box.shake = function(){
 	doShake();
 }
 
+game_box.intro = function(){
+	d_ctx.fillStyle = 'black';
+	d_ctx.fillRect(0,0,500,500);
+	d_ctx.fillStyle = 'white';
+	d_ctx.font = "14px Sans-Serif";
+	d_ctx.fillText("Art by Clint Bellanger. Sounds by BroumBroum and Qubodup", 10, 200);
+}
+
+game_box.end = function(){
+	buttonsOn(false,false,false,false);
+	d_ctx.fillStyle = 'red';
+	d_ctx.globalAlpha = 0.5;
+	d_ctx.fillRect(0,0,500,500);
+	
+	setTimeout(function(){
+		d_ctx.fillStyle = 'white';	
+		d_ctx.font = "24px Sans-Serif";
+		d_ctx.fillText("You Are Dead", 10, 200);
+		
+		setTimeout(function(){
+			d_ctx.fillText("FOREVER!", 10, 250);
+			d_ctx.fillText("press 'fight' to try again", 10, 300);
+		}, 400);
+	}, 400);
+	buttonsOn(true,false,false,false);
+}
+
+game_box.restart = function(){
+	d_ctx.globalAlpha = 1;
+	d_ctx.clearRect(0,0,400,400);
+	fightArea.draw();
+}
+
 function buttonsOff(fight,item,shop,run){
 	if(fight) fightButton.disabled = true;
 	if(item)  itemButton.disabled  = true;
@@ -107,8 +140,8 @@ function buttonsOff(fight,item,shop,run){
 }
 
 function buttonsOn(fight,item,shop,run){
-	if(fight) fightButton.disabled = false;
-	if(item)  itemButton.disabled  = false;
-	if(shop)  shopButton.disabled  = false;
-	if(run)   runButton.disabled   = false;
+	fightButton.disabled = !fight;
+	itemButton.disabled  = !item;
+	shopButton.disabled  = !shop;
+	runButton.disabled   = !run;
 }
