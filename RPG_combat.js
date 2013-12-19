@@ -135,10 +135,12 @@ function Game_Entity(hp,dmg){
                         console.log('running');
                         sendMessage("You ran away. Pretty lame.", true);
                         endCombat('run');
+                        sounds.heroRun.play();
                         return true;
                 }
                 else{
                         sendMessage('blocked!!!!', true);
+                        sounds.regHit.play();
                         return false;
                 }
         

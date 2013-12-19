@@ -7,7 +7,9 @@
  	smallHit  : document.createElement("audio"),
  	enemyMiss : document.createElement("audio"),
  	heroMiss  : document.createElement("audio"),
- 	numSounds : 5,
+ 	heroRun   : document.createElement("audio"),
+ 	
+ 	numSounds : 6,
  	numLoaded : 0
  }
  
@@ -32,12 +34,14 @@
  	document.body.appendChild(this.smallHit);
  	document.body.appendChild(this.enemyMiss);
  	document.body.appendChild(this.heroMiss);
+ 	document.body.appendChild(this.heroRun);
  	
  	this.regHit.addEventListener(    "canplaythrough", sounds.loaded, false);
  	this.bigHit.addEventListener(    "canplaythrough", sounds.loaded, false);
  	this.smallHit.addEventListener(  "canplaythrough", sounds.loaded, false);
  	this.enemyMiss.addEventListener( "canplaythrough", sounds.loaded, false);
  	this.heroMiss.addEventListener(  "canplaythrough", sounds.loaded, false);
+ 	this.heroRun.addEventListener(   "canplaythrough", sounds.loaded, false);
  	
  	this.heroMiss.addEventListener("ended", handleEnemy, false);
  	
@@ -47,6 +51,7 @@
  	this.smallHit.src  = "sounds/small_hit.wav";
  	this.enemyMiss.src = "sounds/miss2.wav";
  	this.heroMiss.src  = "sounds/miss3.wav";
+ 	this.heroRun.src   = "sounds/running.wav";
  }
  
  sounds.init = function(){
