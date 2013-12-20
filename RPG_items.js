@@ -51,6 +51,9 @@ function healingPotion(name,strength, cost){
 	
 	healingPotion.prototype.quaff = function(){
 		hero.hp += this.strength;
+		if(hero.hp > hero.maxHp){
+			hero.hp = hero.maxHp;
+		}
 		
 		hero.inventory.splice(hero.inventory.indexOf(this), 1);
 		setStats();

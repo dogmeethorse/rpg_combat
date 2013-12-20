@@ -15,22 +15,22 @@
  *****************************************************************************************
  * All buttons now work to some extent.
  * now
- 1. Add intro screen
+ 1. Add intro screen <==== Done
  2. Make it so you can buy weapons.  <----- DONE!
  3. add screen effects during combat <------Shaking implemented. Now need to do screen flashing.
- 4. max hp so potions can't take you over your max hp
+ 4. max hp so potions can't take you over your max hp <=--= done
  5. make it so you increase in level and grow stronger <-----You can level up now.
- 6. make it so you can die.
+ 6. make it so you can die. <===== Done
  7. make it so game is an object? <---- meh.
  8. sound with proper loader. <--- DONE!
  9. Have to change enemy turn to start as an event so it doesn't overlap; with hero turn. or some other solution. <--- DONE!
  *****************************************************************************************
- 1. Finish hero death handling
+ 1. Finish hero death handling <--- doneish
  2. Add sounds for running away and critical hero attack
  3. Fix shop Menu with CSS
- 4. max hp so potions can't take you over your max hp 
+ 4. max hp so potions can't take you over your max hp <=== done
  5. Animation for big hit on a monster
- 6. fix setstats() calls so damage appears immediately when you take damage.
+ 6. fix setstats() calls so damage appears immediately when you take damage. <=== done
  7. Animation for running away.
  8. something should happen when you defeat a monster
  9. more exciting level up.
@@ -307,6 +307,7 @@ function giveTreasure(){
 	sendMessage( "you got " + xpGain + "xp and " + gldGain + " gold.", false );
 	hero.xp += xpGain;
 	hero.gld += gldGain;
+	setStats();
 }
 
 function handleTreasure(action){
@@ -335,6 +336,7 @@ function handleEnd(){
 	game_box.restart();
 	state = TREASURE;
 	sendMessage("Another nameless warrior tries his luck. Click fight to begin your adventure.", true);
+	buttonsOn(true, true, true, false);
 }
 
 function handle(action){
@@ -406,6 +408,3 @@ hero.die = function(){
 
 hero.init();
 setStats();
-
-
-
