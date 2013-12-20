@@ -283,6 +283,11 @@ function handleEnemy(){
 		 	current_enemy.takeTurn();
 		 	setStats();
 			setTimeout(function(){
+				
+				if(hero.hp <= 0){
+					hero.die();
+				}
+				
 				buttonsOn(true,true,false,true);
 				console.log("turn back on buttons");
 			},200);
@@ -293,9 +298,7 @@ function handleEnemy(){
 		sendMessage(feedback, false);
 		endCombat('victory');
 	}
-	if(hero.hp <= 0){
-		hero.die();
-	}
+
 }
 
 function giveTreasure(){
@@ -363,6 +366,7 @@ hero.init = function(){
 	hero.weapon = noWeapon;
 	hero.name = "You";
 	hero.maxHp = 10;
+	hero.hp = 10;
 	hero.xp = 10;
 	hero.nextLvlXp = 100;
 	hero.lvl = 1;

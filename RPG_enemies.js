@@ -11,7 +11,7 @@ var enemies = new Array(NUM_ENEMIES);
 
 function loadImage(imName){
 	//imName must end in .png
-	var im = new Image
+	var im = new Image;
 	im.src="dusk_enemies/"+ imName;
 	return im;
 }
