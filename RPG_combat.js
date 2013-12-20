@@ -68,7 +68,7 @@ function sendMessage(output,addOrReplace){
        	messageEl.innerHTML = '<span class="game">' + output + '</span>';
     }
    	else{
-        messageEl.innerHTML += '<br> <span class="game"> ' + output + '</span>';
+        messageEl.innerHTML += '<span class="game"> ' + output + '</span>';
     }
 }
 
@@ -335,7 +335,7 @@ function handleEnd(){
 	hero.init();
 	game_box.restart();
 	state = TREASURE;
-	sendMessage("Another nameless warrior tries his luck. Click fight to begin your adventure.", true);
+	sendMessage("Another nameless warrior tries his luck. Click fight to begin your adventure. Click on the shop to buy supplies for your journey.", true);
 	buttonsOn(true, true, true, false);
 }
 
