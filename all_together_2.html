@@ -1,0 +1,1039 @@
+<!doctype html>
+<html lang="en"> 
+	<head>
+		<meta charset='UTF-8'>
+		<style>
+		h1{
+	text-align:center ;
+}
+h3{
+	text-align:center;
+	color:white;
+}
+p.game{
+	color:white;
+	margin-left: 10px;	
+}
+span.game{
+	color:white;
+}
+button.game{
+	display:box;
+	text-align: center;
+	width: 130px;
+	height: 30px;
+	background-color: #848484;
+	border-radius: 20px;
+	margin:5px;
+}
+
+#game_screen{
+	overflow:hidden;
+	position:relative;
+	z-index:1;
+	background-color: white;
+	margin-left:10px;
+	border: 2px solid black;
+	border-radius: 20px;
+	box-shadow: inset 0px 0px 15px #888; 
+}
+#background{
+	position:relative;
+	z-index:0;
+	display:box;
+	border: 1px solid black;
+	background-color:#0B6121;
+	width: 600px;
+	border-radius: 20px;
+	box-shadow: inset 0px 0px 30px #888;
+}
+
+div.game {
+	border: 2px solid black;
+	border-radius:20px;
+	box-shadow: inset 0px 0px 15px #888;
+	background-color: black;
+}
+#stats{
+	position:relative;
+	margin-right: 10px;
+	float:right;
+	width:150px;
+	height:100px;
+}
+
+#command_card{
+	display:box;
+	position:relative;
+	bottom: 285px;
+	clear: bottom;
+	float:right;
+	margin-right: 10px;
+	width:150px;
+	height:200px;		
+}
+#message_box{
+	position:relative; 
+	clear:top;
+	width: 565px;
+	height: 90px;
+	margin-left:10px;
+	margin-bottom: 10px;
+	padding-top:10px;
+	padding-left:10px;
+}
+#itemMenu{
+	position:absolute;
+	top:180px;
+	z-index:100;
+	padding:10px;
+	width :300px;
+	height : 200px;
+	margin-left:50px;
+}
+
+#shopMenu{
+	position:absolute;
+	top:120px;
+	z-index:100;
+	padding:10px;
+	width :300px;
+	height : 400px;
+	margin-left:50px;
+	border: 2px solid white;
+}
+
+		</style>
+		<title>Dragon Smasher</title>
+	</head>
+		<body onload='handleBegin()'>
+		<div id='background'>
+			<h1>DRAGON SMASHER</h1>
+			<canvas id='game_screen' width='400' height='400'>Canvas not supported on your browser</canvas>
+   		   		<div class='game' id='stats'><p>Game stats go here.</p></div>    
+   				<div class='game' id='command_card'>
+   					<div style='text-align:center;margin-top:20px'>
+   					<button class='game' id='fight' onclick="handle('fight');">FIGHT</button>
+   					<button class='game' id='shop' onclick="handle('shop');">SHOP</button>
+   					<button class='game' id='item' onclick="handle('item');">ITEM</button>
+   					<button class='game' id='run' onclick="handle('run');">RUN</button>
+   					</div>
+   				</div>
+
+   				<div class='game' id='message_box'>
+   					<p class="game">Dragon Smasher is Loading</p>
+   				</div>
+			</div>
+			<script>
+function Weapon(name,dmgBonus, attackChanceBonus, cost){
+	this.name = name;
+	this.dmgBonus = dmgBonus;
+	this.attackChanceBonus = attackChanceBonus;
+	this.cost = cost;
+	
+	
+	Weapon.prototype.equip = function(){
+		hero.weapon.unequip();
+		hero.weapon = this;
+		hero.maxDmg += this.dmgBonus;
+		hero.atk += this.attackChanceBonus;
+		console.log("wielding :"+ hero.weapon.name);
+	}
+	
+	Weapon.prototype.unequip = function(){
+		hero.maxDmg -= this.dmgBonus;
+		hero.atk -= this.attackChanceBonus;
+	}
+	Weapon.prototype.buy = function(){
+		console.log(this);
+		console.log(" buying = "+ this.name + " cost = " + this.cost);
+		if(hero.gld >= this.cost){
+			hero.weapons.push(new Weapon(this.name , this.dmgBonus, this.cost));
+			hero.gld -= this.cost;		
+			sendMessage("You bought a "+ this.name,true);
+		}
+		else{
+			sendMessage("You cannot afford "+ this.name, true);
+		}
+		setStats();
+	}
+}
+
+var noWeapon = new Weapon("Bare Hands", 0, 0, 0);
+var stick = new Weapon('Wooden Stick', 2, 4, 5);
+var dagger = new Weapon('Dagger', 4, 5, 20);
+var shortSword = new Weapon('Short Sword', 6, 8, 50);
+var flail = new Weapon('Flail', 8, 8, 100);
+var longSword = new Weapon('Long Sword', 10, 10, 170);
+
+var shopWeapons = [stick, dagger, shortSword, flail, longSword];
+
+//Other Inventory
+
+function healingPotion(name,strength, cost){
+	this.name = name;
+	this.strength = strength;
+	this.cost = cost;
+	
+	healingPotion.prototype.quaff = function(){
+		hero.hp += this.strength;
+		if(hero.hp > hero.maxHp){
+			hero.hp = hero.maxHp;
+		}
+		
+		hero.inventory.splice(hero.inventory.indexOf(this), 1);
+		setStats();
+		closeItemMenu(itemMenu);
+		sendMessage("You quaff the "+ this.name + " and gain " + this.strength + "hp", false);
+	}
+	
+	healingPotion.prototype.buy = function(){
+		console.log(this);
+		console.log('trying to buy potion');
+		console.log("name ="+ this.name + "cost = " + this.cost);
+		if(hero.gld >= this.cost){
+			console.log("buying Potion");
+			
+			hero.inventory.push(new healingPotion(this.name , this.strength, this.cost));
+			hero.gld -= this.cost;
+			
+			sendMessage("You bought a "+ this.name,true);
+			
+			console.log("hero inventory length ="+ hero.inventory.length);
+			console.log(hero.inventory);
+			setStats();
+		}
+		else{
+			sendMessage("You cannot afford "+ this.name, true);
+		}
+		
+	}
+}
+
+var smallPotion = new healingPotion('Small Potion', 5, 5);
+var largePotion = new healingPotion('Large Potion', 20, 15);
+
+var shopInventory =[ smallPotion, largePotion];
+			
+function buyItem(item){
+	return function(){
+		shopInventory[item].buy();
+	}
+}
+
+function buyWeapon(weapon){
+	return function(){
+		shopWeapons[weapon].buy();
+	}
+}
+
+function useItem(item){
+	return function(){
+		hero.inventory[item].quaff();
+	}
+}
+
+function createItemMenu(){
+	var itemMenu = document.createElement('div');
+	
+	itemMenu.setAttribute('class','game');
+	itemMenu.setAttribute('id', 'itemMenu');
+	itemMenu.innerHTML = '<h3>ITEMS<h3>'
+	
+	var weaponList = document.createElement('select');
+	
+	weaponList.setAttribute("onChange","hero.weapons[this.selectedIndex].equip()");
+	var option = [];
+	
+	for(var weap = 0; weap < hero.weapons.length; weap++){
+		option[weap] = document.createElement('option')
+		option[weap].setAttribute('value', hero.weapons[weap].name);
+		option[weap].innerHTML = hero.weapons[weap].name;
+		weaponList.appendChild(option[weap]);
+	}
+	
+	var itemList = document.createElement('div');
+	var itemButtons = [];
+	var itemNo;
+	
+	for(itemNo = 0; itemNo < hero.inventory.length; itemNo++){
+		itemButtons[itemNo] = document.createElement('button');
+		
+		itemButtons[itemNo].addEventListener('click', useItem(itemNo) ,false);
+		
+		itemButtons[itemNo].textContent = hero.inventory[itemNo].name;
+		itemList.appendChild(itemButtons[itemNo]);	
+	}
+	
+	var closeItems = document.createElement('button');
+	closeItems.setAttribute('onclick', 'closeItemMenu(itemMenu)');
+	closeItems.innerHTML = "CLOSE";
+	itemMenu.appendChild(weaponList);
+	itemMenu.appendChild(itemList);
+	itemMenu.appendChild(closeItems);
+	
+	return itemMenu;	
+}
+
+function openItemMenu(){
+	fightButton.disabled = true;
+	shopButton.disabled  = true;
+	itemButton.disabled  = true;
+	runButton.disabled   = true;
+	
+	itemMenu = createItemMenu();
+	background.appendChild(itemMenu);
+}
+
+function closeItemMenu(itemMenu){
+	background.removeChild(itemMenu);
+	sendMessage("You are now wielding " + hero.weapon.name, true);
+	if(state != COMBAT){
+		fightButton.disabled = false;
+		shopButton.disabled  = false;
+		itemButton.disabled  = false;
+		runButton.disabled   = false;
+	}
+	if(state == COMBAT){
+		handleEnemy();		
+	}
+}
+
+function createShopMenu(){
+	var shopMenu = document.createElement('div');
+	
+	shopMenu.setAttribute('class','game');
+	shopMenu.setAttribute('id', 'shopMenu');
+	shopMenu.innerHTML = '<h3>SHOP<h3>'
+	
+	var weaponList = document.createElement('div');
+	var shopButtons = [];
+	//adding weapons
+	for(var weap = 0; weap < shopWeapons.length; weap++){
+		shopButtons[weap] = document.createElement('button')
+		shopButtons[weap].addEventListener('click', buyWeapon(weap),false);
+		shopButtons[weap].innerHTML = shopWeapons[weap].name + " price " + shopWeapons[weap].cost + "gld";
+		weaponList.appendChild(shopButtons[weap]);
+	}
+	
+	//adding items
+	var itemsToBuy = document.createElement('div');
+	var itemButtons =[]
+	var itemNo;
+	for(itemNo = 0; itemNo < shopInventory.length; itemNo++ ){
+		itemButtons[itemNo] = document.createElement('button');
+		itemButtons[itemNo].textContent= shopInventory[itemNo].name + " " +shopInventory[itemNo].cost + "gld";
+		itemButtons[itemNo].addEventListener('click', buyItem(itemNo),false);
+		
+		itemsToBuy.appendChild(itemButtons[itemNo]);
+	}
+	
+	var closeShop = document.createElement('button');
+	closeShop.setAttribute('onclick', 'closeShopMenu(shopMenu)');
+	closeShop.innerHTML = "CLOSE";
+	shopMenu.appendChild(weaponList);
+	shopMenu.appendChild(itemsToBuy);
+	shopMenu.appendChild(closeShop);
+	
+	return shopMenu;	
+}
+
+function openShopMenu(){
+	buttonsOn(false,false,false,false);
+	
+	shopMenu = createShopMenu();
+	background.appendChild(shopMenu);
+}
+
+function closeShopMenu(shopMenu){
+	background.removeChild(shopMenu);
+	
+	fightButton.disabled = false;
+	shopButton.disabled  = false;
+	itemButton.disabled  = false;
+	runButton.disabled   = true;
+}		
+/*
+ * All images created by Chris Bellinger for his Open Source Game Heroine Dusk.
+ * Hit Sounds created by BroumBroum from freesound.org
+ * Miss Sounds created by Qoubodup from freesound.org
+ * We now have a current enemy and have created a slime enemy
+ * the next step is to make it so that the message box sends the user input so that we can test to see if the 
+ * program is functioning properly so that we can debug.
+ * Now I added some sample dialog and a name prop to enemy.
+ * GET ATTACKS WORKING THEN ADD GAME STATES. <---- Done.
+ *
+ *
+ * Run works and fight works. Now adding items. should create itemMenu. and then have functions 
+ * that update it  open it and close it.
+ * right now item menu won't close after second time you open it.
+ *****************************************************************************************
+ * All buttons now work to some extent.
+ * now
+ 1. Add intro screen <==== Done
+ 2. Make it so you can buy weapons.  <----- DONE!
+ 3. add screen effects during combat <------Shaking implemented. Now need to do screen flashing.
+ 4. max hp so potions can't take you over your max hp <=--= done
+ 5. make it so you increase in level and grow stronger <-----You can level up now.
+ 6. make it so you can die. <===== Done
+ 7. make it so game is an object? <---- meh.
+ 8. sound with proper loader. <--- DONE!
+ 9. Have to change enemy turn to start as an event so it doesn't overlap; with hero turn. or some other solution. <--- DONE!
+ *****************************************************************************************
+ 1. Finish hero death handling <--- doneish
+ 2. Add sounds for running away and critical hero attack
+ 3. Fix shop Menu with CSS
+ 4. max hp so potions can't take you over your max hp <=== done
+ 5. Animation for big hit on a monster
+ 6. fix setstats() calls so damage appears immediately when you take damage. <=== done
+ 7. Animation for running away.
+ 8. something should happen when you defeat a monster
+ 9. more exciting level up.
+ */
+
+const BEGIN    = 10;
+const ENDGAME  =  0;
+const COMBAT   = 20;
+const TREASURE = 30;
+
+var state = BEGIN;
+
+var dragon_screen = document.getElementById('game_screen');
+var d_ctx = dragon_screen.getContext('2d');
+
+var background = document.getElementById('background');
+var outputElement = document.getElementById('output');
+var statOutputEl = document.getElementById('stats');
+var messageEl = document.getElementById('message_box');
+
+var fightButton= document.getElementById('fight');
+var shopButton = document.getElementById('shop');
+var itemButton = document.getElementById('item');
+var runButton = document.getElementById('run');
+
+var current_enemy = null;
+
+function randomInt(min,max){
+            return Math.floor(Math.random() * (max - (min-1) )) + min;
+        }
+     
+function sendMessage(output,addOrReplace){
+	//pause(1000);
+   	if(addOrReplace == true){ 		
+       	messageEl.innerHTML = '<span class="game">' + output + '</span>';
+    }
+   	else{
+        messageEl.innerHTML += '<span class="game"> ' + output + '</span>';
+    }
+}
+
+function setStats(){
+	statOutputEl.innerHTML = "<p class='game'> HP: " + hero.hp +"<br>XP: " + hero.xp + "<br> LVL: " + hero.lvl+ "<br> GLD: " + hero.gld + "</p>";
+}
+
+function initCombat(){
+	console.log('init COMBAT');
+	buttonsOn(true,true,false,true);
+	current_enemy = enemies[randomInt(0,8)];
+	state = COMBAT;
+	fightArea.draw();
+	current_enemy.greeting();
+	current_enemy.draw();
+	console.log("enemy hp = " + current_enemy.hp);
+
+}
+
+function endCombat(how){
+	//how is a string that says how combat ended
+	console.log('ending combat');
+	current_enemy.die();
+	console.log("killing enemy hp reset to " + current_enemy.hp);
+	d_ctx.clearRect(0,0,400,400);
+	fightArea.draw();
+	state = TREASURE;
+	if(how =='victory'){
+		handleTreasure('dead enemy');
+		console.log('checking hero level.');
+		hero.checkLevel();
+	}
+	sendMessage("Press 'fight' button to fight another monster.", false);
+}
+	
+function Game_Entity(hp,dmg){
+        this.maxDmg = dmg;
+        this.minDmg = 1;
+        this.hp = hp;
+        this.atkChance = 50;
+        this.alive = true;
+        this.escChance = 50;
+        
+        Game_Entity.prototype.attack = function(target){
+                if(this.atkChance >= randomInt(1,100)){
+                        var attackDmg = randomInt(this.minDmg,this.maxDmg);
+                        target.hp -= attackDmg;
+                        return attackDmg;
+                }
+                else{
+                        return null;
+                }
+        }
+        Game_Entity.prototype.isAlive = function(){
+                if(this.hp<= 0){
+                        return false;
+                }
+                else{
+                        return true;
+                }
+        }
+        Game_Entity.prototype.run = function(){
+                if(randomInt(1,100)< this.escChance){
+                        console.log('running');
+                        sendMessage("You ran away. Pretty lame.", true);
+                        endCombat('run');
+                        sounds.heroRun.play();
+                        return true;
+                }
+                else{
+                        sendMessage('blocked!!!!', true);
+                        sounds.regHit.play();
+                        return false;
+                }
+        
+        }
+}
+
+function Enemy(index, name,hp,dmg,aggro,atk,esc){
+	this.index = index;
+	this.name = name;
+	this.hp = hp;
+	this.maxDmg = dmg;
+	this.minDmg = 0;
+	this.atkChance = atk;
+	this.escChance = esc;
+	this.aggro = aggro;  //chance on whether monster will attack of flee from 0-1
+	this.maxHp = this.hp;
+	
+	Enemy.prototype.draw = function(){		
+		 d_ctx.drawImage(enemy_pics[this.index], 0, 0, 400,400);
+	}
+	
+	Enemy.prototype.isAlive = function(){
+		if(this.hp> 0){
+			return true;
+		}
+		else{ 
+			return false;
+		}
+	}
+	Enemy.prototype.die = function(){
+		this.hp = this.maxHp;
+	}
+	
+	Enemy.prototype.takeTurn = function(){
+		/*
+		if(1-this.hp/maxhp >aggro){
+			if(Math.random()> aggro){
+				this.run();
+				return;
+			}
+		}
+		*/
+		console.log("Enemy is attacking!");
+		sendMessage("The " + this.name + " is attacking!", false);
+		var result = this.attack(hero);
+		if(result != null){
+			var feedback = "The " + this.name + " hit you for " + result + " damage!"
+			console.log("feedback string = " + feedback);
+			if(result >= 5){
+				console.log("doing shake");
+				game_box.shake();
+				sounds.bigHit.play();
+			}
+			else if(result >=1){
+				fightArea.redFlash();
+				sounds.regHit.play();
+			}
+			else{
+				sounds.smallHit.play();
+			}
+			sendMessage(feedback, false);
+		}
+		else{
+			sounds.enemyMiss.play();
+			var feedback = "The " + this.name + " missed you!";
+			sendMessage(feedback, false);
+		}
+	}
+	
+	Enemy.prototype.greeting = function(){
+		sendMessage("A " + this.name + " approaches. The " + this.name + " leers at you.", true);
+	}
+}
+Enemy.prototype.constructor = Enemy();
+Enemy.prototype = new Game_Entity();
+
+function handleBegin(){
+	game_box.intro();
+	buttonsOn(false,false,false,false);
+	loadEnemyPics();
+	fillEnemyArray();
+	sounds.init();
+
+	var checkLoading = setInterval(function(){
+		if(sounds.loadComplete()){
+				console.log("load complete");
+				buttonsOn(true,true,true,false);
+				state = TREASURE;
+				sendMessage("Press fight to begin your journey", true);
+				clearInterval(checkLoading);
+			}
+		}, 100);
+}
+
+function resolveCombat(result){
+	if(result!= null){
+		var feedback = "You hit the " + current_enemy.name + " for " + result + " damage!"
+		fightArea.whiteFlash();
+		sounds.regHit.play();
+		console.log("feedback string = " + feedback);
+		sendMessage( feedback, true);
+		console.log ("Enemy hp = " + current_enemy.hp);
+	}
+	else{
+		console.log("miss");
+		var feedback = "You missed the " + current_enemy.name + "!";
+		sounds.heroMiss.play();
+		sendMessage(feedback, true);
+		
+	}
+}
+
+function handleCombat(action){
+	buttonsOn(false,false,false,false);
+	switch(action){
+		case 'fight':
+			var result = hero.attack(current_enemy);
+			resolveCombat(result);
+			break;
+		case 'item':
+			openItemMenu();
+			break;
+		case 'run':
+			if(hero.run()){
+				state = TREASURE;
+				handleTreasure('run');
+			}
+			else{
+				handleEnemy();
+			}
+			break;
+	}	
+}
+
+function handleEnemy(){
+	if(current_enemy.isAlive()){
+		buttonsOn(false, false, false, false);
+		setTimeout(function(){
+			console.log("first timeout");
+		 	current_enemy.takeTurn();
+		 	setStats();
+			setTimeout(function(){
+				
+				if(hero.hp <= 0){
+					hero.die();
+				}
+				
+				buttonsOn(true,true,false,true);
+				console.log("turn back on buttons");
+			},200);
+		}, 200);
+	}
+	else{
+		var feedback = "You have defeated the "+ current_enemy.name + " Congratulations!";
+		sendMessage(feedback, false);
+		endCombat('victory');
+	}
+
+}
+
+function giveTreasure(){
+	var xpGain = current_enemy.hp;
+	var gldGain = current_enemy.maxDmg;
+	sendMessage( "you got " + xpGain + "xp and " + gldGain + " gold.", false );
+	hero.xp += xpGain;
+	hero.gld += gldGain;
+	setStats();
+}
+
+function handleTreasure(action){
+	buttonsOn(true,true,true,false);
+	console.log('state = TREASURE');
+	switch(action){
+		case 'fight':
+			initCombat();
+			break;
+		case 'dead enemy':
+			giveTreasure();
+			break;
+		case 'item':
+			openItemMenu();
+			break;
+		case 'shop':
+			openShopMenu();
+			break;
+		case 'run':
+			break;
+	}
+}
+
+function handleEnd(){
+	hero.init();
+	game_box.restart();
+	state = TREASURE;
+	sendMessage("Another nameless warrior tries his luck. Click fight to begin your adventure. Click on the shop to buy supplies for your journey.", true);
+	buttonsOn(true, true, true, false);
+}
+
+function handle(action){
+	console.log("event function triggering " + action);
+	switch(state){
+		case BEGIN:
+			handleBegin();
+			break;
+		case COMBAT:
+			shopButton.disabled = true;
+			handleCombat(action);
+			break;
+		case TREASURE:
+			//shopButton.disabled = false;
+			handleTreasure(action);
+			break;
+		case ENDGAME:
+			console.log("handling end");
+			handleEnd();
+			break;
+	}
+	console.log("setting stats");
+	setStats();	
+}
+
+hero = new Game_Entity(10,1);
+
+hero.init = function(){
+	hero.weapon = noWeapon;
+	hero.name = "You";
+	hero.maxHp = 10;
+	hero.hp = 10;
+	hero.xp = 10;
+	hero.nextLvlXp = 100;
+	hero.lvl = 1;
+	hero.gld = 100;
+	hero.maxDmg = 1 + hero.lvl + hero.weapon.dmgBonus; 
+	hero.minDmg = 1 + hero.lvl -1;
+	hero.weapons = [noWeapon];
+	hero.inventory = [];
+}
+
+hero.levelUp = function(){
+	console.log('hero gaining new level');
+	hero.lvl++;
+	sendMessage("You have reached the next Level.", false);
+	hero.nextLvlXp =  hero.nextLvlXp * 2;
+	sendMessage("xp to next level is " + hero.nextLvlXp, false);
+	hero.maxDmg = 1 + hero.lvl + hero.weapon.dmgBonus; 
+	hero.minDmg = 1 + hero.lvl -1;
+	hero.maxHp += 10;
+}
+
+hero.checkLevel = function(){
+	console.log(hero.nextLvlXp +" xp for next lvl " + hero.xp + " current xp");
+	if(hero.xp >= hero.nextLvlXp){
+		hero.levelUp();
+	}
+	else{
+		console.log('no new level');
+	}
+}
+
+hero.die = function(){
+	sendMessage("You have fallen in battle. You will not be remembered.", false);
+	state = ENDGAME;
+	game_box.end();
+}
+
+hero.init();
+setStats();
+/*
+ * List of Enemies
+ * Order of stats:
+ * name,hp,dmg,aggro,atk,esc
+ */
+
+const NUM_ENEMIES = 9;
+
+var enemy_pics = new Array(NUM_ENEMIES);
+var enemies = new Array(NUM_ENEMIES);
+
+function loadImage(imName){
+	//imName must end in .png
+	var im = new Image;
+	im.src="dusk_enemies/"+ imName;
+	return im;
+}
+
+function loadEnemyPics(){
+ //loads into img array
+ console.log('loading images');
+ enemy_pics[0] = loadImage('https://sites.google.com/site/hillstreesplants/images/bone_shield.png?attredirects=0&d=1');
+ enemy_pics[1] = loadImage('https://sites.google.com/site/hillstreesplants/images/death_speaker.png?attredirects=0&d=1');
+ enemy_pics[2] = loadImage('https://sites.google.com/site/hillstreesplants/images/druid.png?attredirects=0&d=1');
+ enemy_pics[3] = loadImage('https://sites.google.com/site/hillstreesplants/images/imp.png?attredirects=0&d=1');
+ enemy_pics[4] = loadImage('https://sites.google.com/site/hillstreesplants/images/mimic.png?attredirects=0&d=1');
+ enemy_pics[5] = loadImage('https://sites.google.com/site/hillstreesplants/images/shadow_soul.png?attredirects=0&d=1');
+ enemy_pics[6] = loadImage('https://sites.google.com/site/hillstreesplants/images/shadow_tendrils.png?attredirects=0&d=1');
+ enemy_pics[7] = loadImage('https://sites.google.com/site/hillstreesplants/images/skeleton.png?attredirects=0&d=1');
+ enemy_pics[8] = loadImage('https://sites.google.com/site/hillstreesplants/images/zombie.png?attredirects=0&d=1');
+}
+
+function loadEnemyPics(){
+ //loads into img array
+ console.log('loading images');
+ enemy_pics[0] = loadImage('https://sites.google.com/site/hillstreesplants/images/bone_shield.png?attredirects=0&d=1');
+ enemy_pics[1] = loadImage('https://sites.google.com/site/hillstreesplants/images/death_speaker.png?attredirects=0&d=1');
+ enemy_pics[2] = loadImage('https://sites.google.com/site/hillstreesplants/images/druid.png?attredirects=0&d=1');
+ enemy_pics[3] = loadImage('https://sites.google.com/site/hillstreesplants/images/imp.png?attredirects=0&d=1');
+ enemy_pics[4] = loadImage('https://sites.google.com/site/hillstreesplants/images/mimic.png?attredirects=0&d=1');
+ enemy_pics[5] = loadImage('https://sites.google.com/site/hillstreesplants/images/shadow_soul.png?attredirects=0&d=1');
+ enemy_pics[6] = loadImage('https://sites.google.com/site/hillstreesplants/images/shadow_tendrils.png?attredirects=0&d=1');
+ enemy_pics[7] = loadImage('https://sites.google.com/site/hillstreesplants/images/skeleton.png?attredirects=0&d=1');
+ enemy_pics[8] = loadImage('https://sites.google.com/site/hillstreesplants/images/zombie.png?attredirects=0&d=1');
+}
+
+function  fillEnemyArray(){
+	enemies[0] = new Enemy(0,'These are Supposed to be Bones', 11,2,0,20,0);
+	enemies[1] = new Enemy(1,'Mean Lady', 25,10,0,30,0);
+	enemies[2] = new Enemy(2,'Robed Jerk', 10,3,0,20,0);
+	enemies[3] = new Enemy(3,'Imp', 4,1,0,20,0); 
+	enemies[4] = new Enemy(4,'Angry Chest', 8,5,0,20,0);
+	enemies[5] = new Enemy(5,'Scary Shadow', 7,4,0,20,0);
+	enemies[6] = new Enemy(6,'Gross Thing', 6,4,0,20,0);
+	enemies[7] = new Enemy(7,'Skeleton',3,2,0,50,20);
+	enemies[8] = new Enemy(8,'Zombie', 5,3,0,20,0);
+}
+/*
+ * functions and objects for drawing things and visual effects.
+ */
+var game_box = {}
+var effectsDone = new CustomEvent("effectsDone");
+//dragon_screen.addEventListener("effectsDone", handleEnemy, false);
+
+var fightArea = {};
+
+fightArea.img = new Image();
+fightArea.img.src = "https://sites.google.com/site/hillstreesplants/images/fight_background.png?attredirects=0&d=1";
+
+fightArea.draw = function(){
+	d_ctx.drawImage(fightArea.img, -10,-10, 420, 420);
+}
+
+fightArea.redFlash = function(){
+	fightArea.counterR = 0;
+	buttonsOff(true,true,true,true);
+	
+	function doFlash(){
+		console.log(fightArea.counterR);
+		if(fightArea.counterR % 2=== 0){
+			d_ctx.fillStyle = "red";
+			d_ctx.globalAlpha  = 0.5;
+			d_ctx.fillRect(0,0,400,400);
+		}
+		else{
+			d_ctx.globalAlpha = 1;
+			d_ctx.clearRect(0,0,400,400);
+			fightArea.draw();
+			current_enemy.draw();
+		}
+		fightArea.counterR++;
+		if (fightArea.counterR < 6){
+			setTimeout(doFlash,50);
+		}
+		else{
+			buttonsOn(true,true,false,true);
+		}
+	}
+	doFlash();
+}
+
+fightArea.whiteFlash = function(){
+	fightArea.counter = 0;
+	buttonsOff(true,true,true,true);
+	
+	function doFlash(){
+		if(fightArea.counter % 2=== 0){
+			d_ctx.fillStyle = "white";
+			d_ctx.globalAlpha  = 0.5;
+			d_ctx.fillRect(0,0,400,400);
+		}
+		else{
+			d_ctx.globalAlpha = 1;
+			d_ctx.clearRect(0,0,400,400);
+			fightArea.draw();
+			current_enemy.draw();
+		}
+		fightArea.counter++;
+		if (fightArea.counter < 6){
+			setTimeout(doFlash,50);
+		}
+		else{
+			buttonsOn(true,true,false,true);
+			handleEnemy();
+		}
+	}
+	doFlash();
+}
+game_box.shake = function(){
+	game_box.shakeStart = 0;
+	game_box.shakePos = 0;
+ 	game_box.counter = 0;
+ 	game_box.margin = 0;
+	game_box.increment = 1;
+	game_box.shakeAmt = 50;
+	
+	function doShake(){
+		if (game_box.shakePos >= game_box.shakeStart) {
+			game_box.shakePos = game_box.shakeStart - game_box.shakeAmt;
+			background.style.marginLeft =  game_box.shakePos +"px";
+		}
+		else{
+			game_box.shakePos = game_box.shakeStart + (2 * game_box.shakeAmt);
+			background.style.marginLeft = game_box.shakePos  + "px";
+			game_box.shakeAmt -= 50 * (game_box.shakeAmt/200);
+		}
+		if (Math.abs(game_box.shakeAmt) > 2){
+			setTimeout(doShake, Math.abs(game_box.shakeAmt));
+		}
+		else{
+			background.style.marginLeft = game_box.shakeStart  + "px";
+			buttonsOn(true,true,false,true);
+		}
+	}	
+	buttonsOff(true,true,true,true);
+	doShake();
+}
+
+game_box.intro = function(){
+	d_ctx.fillStyle = 'black';
+	d_ctx.fillRect(0,0,500,500);
+	d_ctx.fillStyle = 'white';
+	d_ctx.font = "14px Sans-Serif";
+	d_ctx.fillText("Art by Clint Bellanger. Sounds by BroumBroum and Qubodup", 10, 200);
+}
+
+game_box.end = function(){
+	buttonsOn(false,false,false,false);
+	d_ctx.fillStyle = 'red';
+	d_ctx.globalAlpha = 0.5;
+	d_ctx.fillRect(0,0,500,500);
+	
+	setTimeout(function(){
+		d_ctx.fillStyle = 'white';	
+		d_ctx.font = "24px Sans-Serif";
+		d_ctx.fillText("You Are Dead", 10, 200);
+		
+		setTimeout(function(){
+			d_ctx.fillText("FOREVER!", 10, 250);
+			d_ctx.fillText("press 'fight' to try again", 10, 300);
+		}, 400);
+	}, 400);
+	buttonsOn(true,false,false,false);
+}
+
+game_box.restart = function(){
+	d_ctx.globalAlpha = 1;
+	d_ctx.clearRect(0,0,400,400);
+	fightArea.draw();
+}
+
+function buttonsOff(fight,item,shop,run){
+	if(fight) fightButton.disabled = true;
+	if(item)  itemButton.disabled  = true;
+	if(shop)  shopButton.disabled  = true;
+	if(run)   runButton.disabled   = true;
+}
+
+function buttonsOn(fight,item,shop,run){
+	fightButton.disabled = !fight;
+	itemButton.disabled  = !item;
+	shopButton.disabled  = !shop;
+	runButton.disabled   = !run;
+}
+			
+/* This file contains an object that contains and plays the sound effects.
+ */
+ 
+ var sounds = {
+ 	bigHit    : document.createElement("audio"),
+ 	regHit    : document.createElement("audio"),
+ 	smallHit  : document.createElement("audio"),
+ 	enemyMiss : document.createElement("audio"),
+ 	heroMiss  : document.createElement("audio"),
+ 	heroRun   : document.createElement("audio"),
+ 	
+ 	numSounds : 6,
+ 	numLoaded : 0
+ }
+ 
+ sounds.loadComplete = function(){
+ 	if(sounds.numLoaded >= sounds.numSounds){
+ 		return true;
+ 	} 
+ 	else{
+ 		return false;
+ 	}
+ }
+ 
+ sounds.loaded = function(){
+ 	console.log("loaded " + this.src);
+ 	sounds.numLoaded++;
+ }
+ 
+ sounds.doLoad = function(){
+ 	
+ 	document.body.appendChild(this.bigHit);
+ 	document.body.appendChild(this.regHit);
+ 	document.body.appendChild(this.smallHit);
+ 	document.body.appendChild(this.enemyMiss);
+ 	document.body.appendChild(this.heroMiss);
+ 	document.body.appendChild(this.heroRun);
+ 	
+ 	this.regHit.addEventListener(    "canplaythrough", sounds.loaded, false);
+ 	this.bigHit.addEventListener(    "canplaythrough", sounds.loaded, false);
+ 	this.smallHit.addEventListener(  "canplaythrough", sounds.loaded, false);
+ 	this.enemyMiss.addEventListener( "canplaythrough", sounds.loaded, false);
+ 	this.heroMiss.addEventListener(  "canplaythrough", sounds.loaded, false);
+ 	this.heroRun.addEventListener(   "canplaythrough", sounds.loaded, false);
+ 	
+ 	this.heroMiss.addEventListener("ended", handleEnemy, false);
+ 	
+ 	
+ 	this.regHit.src    = "https://sites.google.com/site/hillstreesplants/rpg_sounds/reg_hit.wav?attredirects=0&d=1";
+ 	this.bigHit.src    = "https://sites.google.com/site/hillstreesplants/rpg_sounds/big_hit.wav?attredirects=0&d=1";
+ 	this.smallHit.src  = "https://sites.google.com/site/hillstreesplants/rpg_sounds/small_hit.wav?attredirects=0&d=1";
+ 	this.enemyMiss.src = "https://sites.google.com/site/hillstreesplants/rpg_sounds/miss2.wav?attredirects=0&d=1";
+ 	this.heroMiss.src  = "https://sites.google.com/site/hillstreesplants/rpg_sounds/miss3.wav?attredirects=0&d=1";
+ 	this.heroRun.src   = "https://sites.google.com/site/hillstreesplants/rpg_sounds/running.wav?attredirects=0&d=1";
+ }
+ 
+ sounds.init = function(){
+ 	//tests the first audio file to see if audio type is supported before loading all sounds
+ 	if(this.bigHit.canPlayType("audio/wav") == "probably"||
+ 	   this.bigHit.canPlayType("audio/wav") == "maybe"){
+		sounds.doLoad();
+ 	}
+ 	else{
+ 		alert("This Browser does not support .wav files. There will be no sound.");
+ 	}
+ }
+</script>
+</body>
+</html>
